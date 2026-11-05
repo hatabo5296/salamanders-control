@@ -6301,6 +6301,11 @@ TEAM_MASTERS_REF.on("value", snapshot => {
   const MIN_SCALE = 0.55;
 
   function fitControlPanel() {
+    if (window.matchMedia('(max-width: 1200px) and (pointer: coarse)').matches) {
+      const w = document.getElementById('panelWrap');
+      if (w) w.style.zoom = '1';
+      return;
+    }
     const wrap = document.getElementById('panelWrap');
     if (!wrap) return;
 
@@ -6339,36 +6344,7 @@ TEAM_MASTERS_REF.on("value", snapshot => {
 </script>
 
 
-<!-- iPad対応：既存の配置・機能は変更せず、画面幅に合わせて操作盤全体を縮小 -->
-<style id="ipad-control-fit-style">
-@media (max-width: 1200px) and (pointer: coarse) {
-  html { overflow-x: hidden; }
-  body { justify-content: flex-start !important; align-items: flex-start !important; }
-  button, select { touch-action: manipulation; }
-}
-</style>
-<script id="ipad-control-fit-script">
-(function(){
-  const mq = window.matchMedia('(max-width: 1200px) and (pointer: coarse)');
-  let timer;
-  function fit(){
-    document.body.style.zoom = '';
-    if(!mq.matches) return;
-    const wrap = document.getElementById('panelWrap');
-    if(!wrap) return;
-    // 現行の横並び配置を維持し、画面幅に収まる倍率だけ適用する。
-    const contentWidth = Math.max(wrap.scrollWidth + 48, wrap.getBoundingClientRect().width + 48);
-    const available = document.documentElement.clientWidth;
-    const scale = Math.min(1, available / contentWidth);
-    document.body.style.zoom = String(scale);
-  }
-  function scheduleFit(){ clearTimeout(timer); timer=setTimeout(fit, 80); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fit,{once:true});
-  else fit();
-  window.addEventListener('resize',scheduleFit);
-  window.addEventListener('orientationchange',scheduleFit);
-})();
-</script>
+
 </body>
 </html>
 <style>
@@ -6408,5 +6384,45 @@ TEAM_MASTERS_REF.on("value", snapshot => {
 }
 #masterRows{
   max-height: 100vh !important;
+}
+</style>
+
+<!-- iPad用：全体縮小を廃止し、操作領域を縦に配置。PCは従来通り。 -->
+<style id="ipad-touch-layout">
+@media (max-width:1200px) and (pointer:coarse) {
+  html,body { overflow-x:hidden; }
+  body { display:block!important; padding:12px!important; min-height:100%; }
+  #panelWrap { display:flex!important; flex-direction:column!important; align-items:stretch!important; gap:16px!important; width:100%!important; zoom:1!important; }
+  .leftControlArea,.rightArea { width:100%!important; max-width:100%!important; align-items:stretch!important; gap:12px!important; }
+  .topArea { display:flex!important; flex-wrap:wrap!important; gap:10px!important; width:100%!important; }
+  #panel { flex:1 1 560px; width:auto!important; min-width:0; padding:20px 16px!important; }
+  .sideControls { flex:1 1 110px; width:auto!important; min-width:100px; }
+  .actionControls { flex:1 1 200px; width:auto!important; min-width:180px; }
+  .under { width:100%!important; flex-wrap:wrap!important; justify-content:flex-start; }
+  .under button { touch-action:manipulation; }
+  .runningBoard { width:100%!important; overflow-x:auto; }
+  .runningTable { width:max-content; min-width:1040px; }
+  .orderDisplayArea { width:100%!important; gap:10px!important; }
+  .orderDisplayBox { min-width:0; padding:10px!important; }
+  .orderDisplayTitle { font-size:23px; }
+  .orderDisplayRow { grid-template-columns:30px 35px minmax(0,1fr) 44px 44px; gap:4px; font-size:17px; }
+  .orderViewBtn,.playerViewBtn,.bulkChangeBtn,.masterBtn { width:auto; min-width:65px; max-width:100%; font-size:13px; }
+  .visionControlPanel { width:100%!important; }
+  .visionControlGrid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .visionBtn { min-height:54px; height:auto; padding:6px; }
+  .orderPanel,.bulkPanel,.starterPanel { width:min(96vw,900px)!important; max-height:90vh; overflow:auto; }
+  .orderTeams { flex-wrap:wrap; }
+  .orderTeamBox { min-width:min(100%,340px); }
+  .masterPanel { transform:none!important; width:96vw!important; max-width:96vw!important; max-height:90vh!important; }
+  #masterRows { max-height:65vh!important; }
+  button,select { touch-action:manipulation; }
+}
+@media (max-width:700px) and (pointer:coarse) {
+  #panel { flex-basis:100%; }
+  .sideControls { flex:1 1 110px; }
+  .actionControls { flex:2 1 210px; }
+  .orderDisplayArea { flex-direction:column; }
+  .visionControlGrid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .runningBoard { padding:10px; }
 }
 </style>
