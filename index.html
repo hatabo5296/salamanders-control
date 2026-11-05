@@ -1,0 +1,6412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scoreboard Control</title>
+<style>
+* { box-sizing: border-box; }
+
+button {
+  cursor: pointer;
+}
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #000;
+    color: #fff;
+    font-family: "Arial Black", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #panelWrap {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+
+  align-items: center;
+
+}
+
+.runningBoard {
+
+  width: 1040px;
+
+  background: #111;
+
+  border: 1px solid rgba(255,255,255,.2);
+
+  border-radius: 16px;
+
+  padding: 18px;
+
+}
+
+.runningTitle {
+
+  font-size: 28px;
+
+  margin-bottom: 12px;
+
+}
+
+.runningTable {
+  display: grid;
+  grid-template-columns: 150px repeat(12, 58px) 72px;
+  gap: 5px;
+}
+.runCell {
+
+  height: 50px;
+
+  background: #263844;
+
+  border-radius: 6px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 28px;
+
+  cursor: pointer;
+
+}
+  #panel {
+  position: relative;
+  width: 620px;
+  height: 520px;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 18px;
+  background: #000;
+  padding: 34px 30px;
+  overflow: hidden;
+}
+  .inning { font-size: 78px; line-height: 1; margin-bottom: 105px; }
+  .bases { position: absolute; right: 86px; top: 58px; width: 240px; height: 150px; }
+  .baseBtn {
+    position: absolute;
+    width: 78px;
+    height: 78px;
+    border: 0;
+    border-radius: 10px;
+    transform: rotate(45deg);
+    background: #405462;
+    cursor: pointer;
+  }
+  .baseBtn.on {
+  background: #ff174f;
+  box-shadow: 0 0 18px rgba(255,23,79,.95);
+}
+  #second { left: 82px; top: 0; } #third { left: 18px; top: 64px; } #first { left: 146px; top: 64px; }
+  .row { display: flex; align-items: center; height: 118px; }
+  .teamName {
+    font-size: 76px;
+    width: 110px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+  .teamName:hover { outline: 2px solid rgba(255,255,255,.3); }
+  .score {
+    font-size: 94px;
+    width: 160px;
+    text-align: center;
+  }
+  .bsoLabel { font-size: 62px; width: 70px; text-align: center; }
+  .dots { display: flex; gap: 16px; }
+  .dotBtn {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 8px solid #123040;
+    background: #445865;
+    cursor: pointer;
+  }
+  .dotBtn.ball.on {
+  background: #00c8ff;
+  box-shadow: 0 0 16px rgba(0,200,255,.95);
+}
+
+.dotBtn.strike.on {
+  background: #ffe600;
+  box-shadow: 0 0 16px rgba(255,230,0,.95);
+}
+
+.dotBtn.out.on {
+  background: #ff174f;
+  box-shadow: 0 0 16px rgba(255,23,79,.95);
+}
+  .sideControls {
+  width: 120px;
+  background: #d8d8d8;
+  padding: 12px;
+  border-radius: 16px;
+  display: grid;
+  gap: 10px;
+align-self: stretch;
+}
+
+.resetBtn {
+
+  height: 92px;
+
+  border-radius: 12px;
+
+  background: #000;
+
+  color: #fff;
+
+  font-size: 15px;
+
+  line-height: 1.2;
+
+  white-space: normal;
+
+}
+
+.actionControls {
+
+  width: 220px;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+}
+
+.playBtn {
+
+  height: 60px;
+
+  border-radius: 12px;
+
+  font-size: 16px;
+
+  font-weight: 900;
+
+}
+
+.playBtn.strikeBtn { background: #d6b800; color: #000; }
+
+.playBtn.ballBtn { background: #00aaff; }
+
+.playBtn.hitBtn { background: #00a86b; }
+
+.playBtn.hrBtn { background: #ff174f; }
+
+.playBtn.outBtn { background: #ff8c00; }
+
+.playBtn.runnerOutBtn { background: #7b1fff; }
+ .under {
+
+  width: 1028px;
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 18px;
+
+  align-items: stretch;
+
+}
+  .stepBox { background: #405462; border-radius: 14px; padding: 16px; display: flex; gap: 14px; align-items: center; }
+  .stepBox button {
+
+  width: 76px;
+
+  height: 76px;
+
+  border-radius: 10px;
+
+  background: #000;
+
+  color: #fff;
+
+  font-size: 54px;
+
+  line-height: 76px;
+
+  text-align: center;
+
+  padding: 0;
+
+}
+  .stepLabel { font-size: 34px; writing-mode: vertical-rl; line-height: 1.05; }
+  .allReset { background: #ff174f; border-radius: 14px; padding: 18px 22px; font-size: 32px; }
+
+.changeBtn {
+  background: #ff8c00;
+  border-radius: 14px;
+  padding: 18px 26px;
+  font-size: 34px;
+}
+
+.benchSwapBtn {
+  background: #00695c;
+}
+
+.xGameBtn {
+  background: #7b1fff;
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-size: 30px;
+  line-height: 1.15;
+  min-width: 92px;
+}
+
+
+.runCell.header {
+  background: #000;
+  color: #fff;
+  font-size: 18px;
+}
+
+.runCell.team {
+  background: #405462;
+  font-size: 26px;
+  line-height: 1.05;
+  padding: 0 4px;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.runCell.activeInning {
+  background: #ff8c00;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(255,140,0,.9);
+}
+
+.runningBoard {
+  position: relative;
+}
+
+.runningHeader{
+display:flex;
+justify-content:flex-end;
+margin-bottom:12px;
+}
+
+.runningToggleBtn{
+
+position:static;
+
+width:120px;
+
+height:58px;
+
+border:none;
+
+border-radius:16px;
+
+background:
+linear-gradient(
+180deg,
+#1d2f3d,
+#0c151d
+);
+
+color:#fff;
+
+font-size:22px;
+
+font-weight:900;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+box-shadow:
+0 0 20px rgba(0,0,0,.5),
+inset 0 1px 0 rgba(255,255,255,.15);
+
+}
+.runningToggleBtn.active{
+
+background:
+
+linear-gradient(
+
+180deg,
+
+#ff9800,
+
+#ff5500
+
+);
+
+box-shadow:
+
+0 0 22px
+
+rgba(255,140,0,.9);
+
+}
+
+
+.runningToggleBtn.active {
+
+  background:
+  linear-gradient(
+    180deg,
+    #ff8c00,
+    #ff5200
+  );
+
+  box-shadow:
+    0 0 20px
+    rgba(255,140,0,.9);
+
+}
+
+.runningToggleBtn:active {
+
+transform:
+scale(.97);
+
+}
+
+.orderArea {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.changeOrderBtn {
+  background: #ff8c00;
+}
+
+.orderBtn {
+  background: #00a86b;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.orderModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.78);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.orderModal.show {
+  display: flex;
+}
+
+.orderPanel {
+  width: 1180px;
+  background: #111;
+  border: 2px solid rgba(255,255,255,.25);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+.orderTitle {
+  font-size: 34px;
+  margin-bottom: 18px;
+}
+
+.orderTeams {
+  display: flex;
+  gap: 28px;
+}
+
+.orderTeamBox {
+  flex: 1;
+  background: #1b2b36;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.orderTeamTitle {
+  font-size: 28px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.orderHeader,
+.orderRow {
+  display: grid;
+  grid-template-columns: 42px 170px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.orderHeader {
+  font-size: 18px;
+  color: #9fdcff;
+}
+
+.orderNo {
+  font-size: 22px;
+  text-align: center;
+}
+
+.orderInput {
+  height: 38px;
+  border-radius: 8px;
+  border: 0;
+  padding: 0 10px;
+  font-size: 20px;
+  font-family: inherit;
+}
+
+.orderActions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.orderCancelBtn,
+.orderSaveBtn {
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-size: 24px;
+}
+
+.orderCancelBtn {
+  background: #555;
+}
+
+.orderSaveBtn {
+  background: #00a86b;
+}
+
+input.orderInput {
+  background: #fff;
+  color: #000;
+  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  font-weight: 700;
+  ime-mode: active;
+}
+
+.orderPanel,
+.orderTeamBox,
+.orderRow,
+.orderInput {
+  position: relative;
+  z-index: 1000;
+}
+
+#panelWrap {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 44px;
+}
+
+.leftControlArea {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+.orderDisplayArea {
+  width: 720px;
+  display: flex;
+  gap: 18px;
+}
+
+.orderDisplayBox {
+  flex: 1;
+  background: #111;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.orderDisplayTitle{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:8px;
+  font-size:30px;
+  margin-bottom:16px;
+  color:#9fdcff;
+}
+
+.orderViewBtn{
+  grid-column:1;
+  grid-row:2;
+}
+
+.playerViewBtn{
+  grid-column:2;
+  grid-row:2;
+}
+.orderDisplayRow {
+  display: grid;
+  grid-template-columns: 42px 44px minmax(0, 1fr) 58px 58px;
+  gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  font-size: 24px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  cursor: pointer;
+}
+
+.orderDisplayName {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.playerMusicBtn {
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #00aaff, #005bbb);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.playerMusicBtn:hover {
+  filter: brightness(1.2);
+}
+
+.playerMusicBtn:active {
+  transform: scale(.96);
+}
+
+.playerMusicBtn.active {
+  background: linear-gradient(180deg, #00c853, #007a33);
+  box-shadow: 0 0 12px rgba(0,200,83,.9);
+}
+
+.playerVideoBtn {
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #7b1fff, #4610a8);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.playerVideoBtn:hover {
+  filter: brightness(1.2);
+}
+
+.playerVideoBtn:active {
+  transform: scale(.96);
+}
+
+.playerVideoBtn.active {
+  background: linear-gradient(180deg, #ff174f, #b0002e);
+  box-shadow: 0 0 12px rgba(255,23,79,.9);
+}
+
+.orderDisplayRow:hover {
+  background: rgba(255,255,255,.08);
+}
+
+.orderDisplayNo {
+  color: #ff8c00;
+  text-align: center;
+}
+
+.orderDisplayPos,
+.orderDisplayName {
+  color: #fff;
+}
+
+.orderDisplayRow.activeBatter {
+  background: rgba(255,140,0,.28);
+  box-shadow: inset 0 0 0 2px rgba(255,140,0,.95);
+}
+
+.batterControlArea {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.batterBtn {
+  background: #ff8c00;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 22px;
+}
+
+.orderDisplayRow.defensePitcher {
+  background: rgba(0,200,255,.18);
+  box-shadow: inset 0 0 0 2px rgba(0,200,255,.9);
+}
+
+.orderDisplayRow.defensePitcher .orderDisplayNo,
+.orderDisplayRow.defensePitcher .orderDisplayPos {
+  color: #00c8ff;
+}
+
+.batterControlArea.hidden {
+  display: none;
+}
+
+.batterShowBtn {
+  background: #00aaff;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 22px;
+}
+
+.batterShowBtn.active {
+  background: linear-gradient(180deg, #ff8c00, #ff5200);
+  box-shadow: 0 0 14px rgba(255,140,0,.9);
+}
+
+.orderViewBtn{
+
+width:54px;
+
+height:54px;
+
+border:none;
+
+border-radius:12px;
+
+background:
+linear-gradient(
+180deg,
+#202f39,
+#111
+);
+
+color:#fff;
+
+font-size:18px;
+
+font-weight:900;
+
+cursor:pointer;
+
+}
+
+.orderViewBtn.active{
+
+background:
+linear-gradient(
+180deg,
+#ff9800,
+#ff5500
+);
+
+box-shadow:
+0 0 16px rgba(255,140,0,.8);
+
+}
+
+.scoreToggleBtn{
+position:absolute;
+right:18px;
+top:18px;
+width:92px;
+height:72px;
+border-radius:14px;
+background:linear-gradient(180deg,#1d2f3d,#0c151d);
+color:#fff;
+font-size:20px;
+font-weight:900;
+line-height:1.2;
+box-shadow:
+0 0 20px rgba(0,0,0,.5),
+inset 0 1px 0 rgba(255,255,255,.15);
+z-index:10;
+}
+
+.scoreToggleBtn.active{
+background:linear-gradient(180deg,#00aaff,#0066ff);
+box-shadow:0 0 18px rgba(0,170,255,.9);
+}
+
+.rightArea{
+display:flex;
+flex-direction:column;
+gap:18px;
+}
+
+.topArea {
+
+  display: grid;
+
+  grid-template-columns: 620px 120px 220px;
+
+  gap: 10px;
+
+  align-items: stretch;
+
+}
+
+.sideControls {
+  align-self: stretch;
+}
+
+.actionControls {
+  align-self: stretch;
+}
+
+.changeBtn,
+.allReset,
+.xGameBtn {
+  width: 170px;
+  height: 96px;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.allReset {
+  font-size: 26px;
+}
+
+.xGameBtn {
+  font-size: 26px;
+}
+
+.historyBtn {
+  width: 150px;
+  height: 96px;
+  border-radius: 14px;
+  padding: 0;
+  font-size: 26px;
+  line-height: 1.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.undoBtn {
+  background: #00aaff;
+}
+
+.redoBtn {
+  background: #00a86b;
+}
+
+.orderViewBtn{
+width:120px;
+font-size:16px;
+}
+
+.playerViewBtn{
+width:110px;
+height:54px;
+border:none;
+border-radius:12px;
+background:linear-gradient(180deg,#202f39,#111);
+color:#fff;
+font-size:16px;
+font-weight:900;
+cursor:pointer;
+}
+
+.playerViewBtn.active{
+background:linear-gradient(180deg,#00aaff,#0066ff);
+box-shadow:0 0 16px rgba(0,170,255,.8);
+}
+
+
+.playBtn.foulBtn {
+  background:#333;
+  color:#fff;
+}
+
+.pitchCountBox{
+  background:#111;
+  border-radius:12px;
+  padding:8px;
+  text-align:center;
+  color:#fff;
+}
+
+.pitchCountTitle{
+  font-size:16px;
+  color:#9fdcff;
+}
+
+.pitcherCountName{
+  font-size:14px;
+  line-height:1.2;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.pitchCountNumber{
+  font-size:34px;
+  color:#ffde00;
+  line-height:1.1;
+}
+
+.pitchAdjust{
+  display:flex;
+  gap:6px;
+  margin-top:6px;
+}
+
+.pitchAdjust button{
+  flex:1;
+  height:34px;
+  border-radius:8px;
+  background:#405462;
+  color:#fff;
+  font-size:22px;
+}
+
+.playBtn.sacBtn{
+  background:#009688;
+}
+
+.playBtn.stealBtn{
+  background:#3f51b5;
+}
+
+.teamName{
+  font-size:60px;
+  width:90px;
+}
+
+.score{
+  font-size:72px;
+  width:120px;
+}
+
+.bsoLabel{
+  font-size:46px;
+  width:50px;
+}
+
+.dotBtn{
+  width:48px;
+  height:48px;
+}
+
+.row{
+  height:90px;
+}
+
+.outRow{
+  height:70px;
+  padding-left:210px;
+}
+
+.actionControls{
+  width:220px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  align-self:stretch;
+}
+
+.playBtn{
+  height:60px;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:900;
+  line-height:1.15;
+}
+
+.playBtn.stealBtn{ background:#3f51b5; }
+.playBtn.buntBtn{ background:#009688; }
+.playBtn.doubleBtn{ background:#66bb00; color:#000; }
+.playBtn.tripleBtn{ background:#9575cd; color:#000; }
+.playBtn.dpBtn{ background:#b36b00; }
+.playBtn.errorBtn{ background:#b04a78; }
+
+.orderDisplayTitle{
+  grid-template-columns:1fr 1fr 1fr;
+}
+
+.orderTeamNameTitle{
+  grid-column:1 / 4;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  width:100%;
+}
+
+.teamTitleText{
+  flex:1;
+  text-align:center;
+  font-size:30px;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.masterBtn{
+  flex-shrink:0;
+}
+
+.bulkChangeBtn{
+  width:110px;
+  height:54px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(180deg,#ff9800,#ff5500);
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.bulkModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.bulkModal.show{
+  display:flex;
+}
+
+.bulkPanel{
+  width:720px;
+  background:#111;
+  border:2px solid rgba(255,255,255,.3);
+  border-radius:18px;
+  padding:22px;
+}
+
+.bulkTitle{
+  font-size:30px;
+  margin-bottom:16px;
+  color:#9fdcff;
+}
+
+.bulkRow{
+  display:grid;
+  grid-template-columns:50px 100px 1fr;
+  gap:10px;
+  margin-bottom:8px;
+  align-items:center;
+}
+
+.bulkNo{
+  font-size:24px;
+  color:#ff8c00;
+  text-align:center;
+}
+
+.bulkInput{
+  height:40px;
+  border-radius:8px;
+  border:0;
+  padding:0 10px;
+  font-size:20px;
+  font-weight:700;
+}
+
+.bulkActions{
+  display:flex;
+  gap:12px;
+  margin-top:18px;
+}
+
+.bulkActions button{
+  flex:1;
+  height:58px;
+  border-radius:12px;
+  font-size:24px;
+}
+
+.bulkCancelBtn{
+  background:#555;
+}
+
+.bulkSaveBtn{
+  background:#00a86b;
+}
+
+.masterBtn{
+  width:110px;
+  height:54px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(180deg,#00aaff,#0066ff);
+  color:#fff;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.masterModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.82);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+}
+
+.masterModal.show{
+  display:flex;
+}
+
+.masterPanel{
+
+  width:auto;
+
+  max-width:90vw;
+
+  max-height:82vh;
+
+  background:#111;
+
+  border:2px solid rgba(255,255,255,.3);
+
+  border-radius:18px;
+
+  padding:22px;
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+.masterTitle{
+  font-size:30px;
+  margin-bottom:14px;
+  color:#9fdcff;
+}
+
+.masterRow{
+  display:grid;
+  grid-template-columns:80px 1fr 60px;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.masterInput,
+.bulkSelect{
+  height:40px;
+  border-radius:8px;
+  border:0;
+  padding:0 10px;
+  font-size:18px;
+  font-weight:700;
+}
+
+.masterDeleteBtn{
+  background:#ff174f;
+  color:#fff;
+  border-radius:8px;
+  font-size:18px;
+}
+
+.masterActions{
+
+  display:flex;
+
+  gap:12px;
+
+  margin-top:16px;
+
+  position:sticky;
+
+  bottom:0;
+
+  background:#111;
+
+  padding-top:14px;
+
+  flex-shrink:0;
+
+}
+
+.masterActions button{
+  flex:1;
+  height:58px;
+  border-radius:12px;
+  font-size:22px;
+}
+
+.masterAddBtn{
+  background:#00a86b;
+}
+
+.masterCancelBtn{
+  background:#555;
+}
+
+.masterSaveBtn{
+  background:#ff8c00;
+}
+
+#masterRows{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:18px;
+
+  overflow-x:auto;
+
+  overflow-y:auto;
+
+  max-height:58vh;
+
+  padding-bottom:12px;
+
+}
+
+.masterPlayerColumns{
+
+  display:flex;
+
+  gap:18px;
+
+  align-items:flex-start;
+
+}
+
+.masterColumn{
+
+  min-width:340px;
+
+  background:#1b2b36;
+
+  border-radius:12px;
+
+  padding:12px;
+
+}
+
+.masterColumnTitle{
+  font-size:20px;
+  color:#9fdcff;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+.playBtn.deadBallBtn{
+  background:#8bc34a;
+  color:#000;
+}
+
+.playBtn.tagupBtn{
+  background:#ffca28;
+  color:#000;
+}
+
+.masterTeamInfo{
+  width:100%;
+  display:grid;
+  grid-template-columns:90px 200px 90px 230px 150px 100px 110px 230px 110px;
+  gap:10px;
+  align-items:center;
+  background:#1b2b36;
+  border-radius:12px;
+  padding:12px;
+  flex:0 0 100%;
+}
+
+.masterDeleteBtn{height:40px;border:0;border-radius:8px;background:#a32626;color:#fff;font-size:15px;font-weight:900;padding:0 14px;cursor:pointer}.masterDeleteBtn:disabled{opacity:.35;cursor:not-allowed}
+
+.masterTeamSelect{
+  height:40px;
+  border-radius:8px;
+  border:0;
+  padding:0 10px;
+  font-size:18px;
+  font-weight:700;
+}
+
+
+
+.starterModal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:999999;display:none;align-items:center;justify-content:center}
+.starterModal.show{display:flex}
+.starterPanel{width:620px;background:#10151a;border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.starterTitle{font-size:30px;font-weight:1000;color:#fff;margin-bottom:18px}
+.starterControls{display:flex;gap:10px}
+.starterControls select{flex:1;height:48px;border-radius:10px;background:#fff;color:#111;font-size:17px;font-weight:800;padding:0 12px}
+.starterControls button,.starterActions button{border:0;border-radius:10px;color:#fff;font-weight:900;cursor:pointer}
+.starterStartBtn{width:110px;background:#1976d2;font-size:17px}.starterStartBtn:disabled{opacity:.45;cursor:not-allowed;background:#666}
+.starterProgress{margin:18px 0;padding:15px;border-radius:10px;background:#1b252d;color:#d8f0ff;font-size:18px;font-weight:900;text-align:center}
+.starterActions{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.starterActions button{height:48px;background:#555;font-size:16px}
+.starterActions .next{background:#ff7043}.starterActions .close{background:#333}
+
+.visionControlPanel{width:1040px;background:#10151a;border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:16px;margin-top:0}.visionControlTitle{font-size:26px;color:#9fdcff;margin-bottom:12px}.visionControlGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.visionBtn{height:58px;border:0;border-radius:12px;background:#263844;color:#fff;font-size:17px;font-weight:900}.visionBtn.active{background:linear-gradient(180deg,#ff9800,#ff5500);box-shadow:0 0 14px rgba(255,140,0,.8)}.visionBtn.clear{background:#555}.visionBtn.danger{background:#a32626}.visionStatus{margin-top:10px;font-size:14px;color:#bbb;word-break:break-all}.visionAssetBtn{background:#176b42!important}.visionAssetBtn.syncing{opacity:.6}.masterAssetSelect{width:170px;min-width:0;height:38px;border-radius:8px;background:#172027;color:#fff;border:1px solid #53616b;padding:0 7px;font-size:13px}.masterAssetHead{font-size:12px;color:#9fdcff;text-align:center}.masterRow.assetRow{grid-template-columns:78px 1fr 170px 170px 42px;gap:6px;align-items:center}
+
+
+/* ===== 2026-10 レイアウト整理版：機能・ID・JSは変更しない ===== */
+body{
+  align-items:flex-start;
+  justify-content:center;
+  padding:24px;
+}
+#panelWrap{
+  flex-direction:row;
+  align-items:flex-start;
+  gap:24px;
+}
+.leftControlArea{gap:14px;}
+.rightArea{
+  width:720px;
+  gap:14px;
+}
+.orderDisplayArea{
+  width:720px;
+  gap:12px;
+}
+.orderDisplayBox{padding:14px;}
+.visionControlPanel{
+  width:720px;
+  margin-top:0;
+  padding:14px;
+}
+.visionControlGrid{
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.visionBtn{height:52px;font-size:15px;}
+.visionControlTitle{font-size:24px;margin-bottom:10px;}
+.visionStatus{font-size:12px;margin-top:8px;}
+.runningBoard{margin-top:0;}
+
+/* 画面が狭い場合だけ全体を少し詰める */
+@media (max-width: 1500px){
+  body{padding:12px;}
+  #panelWrap{gap:14px;}
+}
+
+.eventVideoBtn.eventVideoActive{background:#16a34a!important;color:#fff!important;box-shadow:0 0 0 2px #86efac inset,0 0 12px rgba(34,197,94,.75)!important}
+
+/* 先後入替＋ベンチ入替追加後も右側オーダーへはみ出さない */
+.under .xGameBtn{
+  width:112px;
+  min-width:112px;
+  font-size:22px;
+}
+.under .benchSwapBtn{
+  width:112px;
+  min-width:112px;
+  font-size:22px;
+}
+
+
+/* 下段操作を左側エリア内に収める：得点±・イニング±をコンパクト化 */
+.under{width:1028px;gap:7px;}
+.under .stepBox{padding:10px;gap:8px;}
+.under .stepBox button{width:54px;height:64px;line-height:64px;font-size:42px;}
+.under .stepLabel{font-size:27px;}
+.under .changeBtn,.under .allReset,.under .xGameBtn{flex-shrink:0;}
+.under .changeBtn{width:92px;height:84px;font-size:24px;}
+.under .allReset{width:100px;height:84px;font-size:21px;}
+.under .xGameBtn,.under .benchSwapBtn{width:92px;min-width:92px;height:84px;font-size:20px;}
+
+
+/* シート紹介 */
+.sheetIntroChoice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 18px}
+.sheetIntroChoice button{height:64px;border:2px solid rgba(255,255,255,.25);border-radius:12px;background:#263844;color:#fff;font-size:20px;font-weight:900}
+.sheetIntroChoice button.active{background:linear-gradient(180deg,#ff9800,#ff5500);box-shadow:0 0 14px rgba(255,140,0,.8)}
+.sheetIntroActions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sheetIntroActions button{height:54px;border:0;border-radius:10px;color:#fff;font-size:18px;font-weight:900}
+.sheetIntroShowBtn{background:#1976d2}.sheetIntroCloseBtn{background:#555}
+
+
+.bulkTopBar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:8px}
+.bulkTopBar .bulkTitle{margin-bottom:0}
+.bulkSheetPreviewBtn{height:48px;padding:0 22px;border:0;border-radius:10px;background:#1976d2;color:#fff;font-size:18px;font-weight:900;cursor:pointer;flex-shrink:0}
+.bulkTopActions{display:flex;gap:10px;align-items:center}
+.bulkReturnGameBtn{height:48px;padding:0 22px;border:0;border-radius:10px;background:#00a86b;color:#fff;font-size:18px;font-weight:900;cursor:pointer;flex-shrink:0}
+.bulkReturnGameBtn:hover{filter:brightness(1.12)}
+.bulkReturnGameBtn:active{transform:scale(.97)}
+.bulkReturnGameBtn.switching{background:#f57c00;box-shadow:0 0 0 4px rgba(245,124,0,.22),0 0 18px rgba(245,124,0,.55)}
+.bulkReturnGameBtn:disabled{opacity:1;cursor:wait}
+.bulkSheetPreviewBtn:hover{filter:brightness(1.12)}
+.bulkSheetPreviewBtn:active{transform:scale(.97)}
+.bulkSheetPreviewBtn.loading{background:#f57c00;box-shadow:0 0 0 4px rgba(245,124,0,.22),0 0 18px rgba(245,124,0,.6)}
+.bulkSheetPreviewBtn.shown{background:#00a86b;box-shadow:0 0 0 4px rgba(0,168,107,.2)}
+.bulkSheetPreviewBtn:disabled{opacity:1;cursor:wait}
+.bulkPreviewNote.loading{color:#ffd180;font-weight:900}
+.bulkPreviewNote.ready{color:#80e8c0;font-weight:900}
+.bulkPreviewNote{font-size:13px;color:#9fdcff;margin-bottom:14px}
+
+.playerVideoBtn.mediaPending,.playerMusicBtn.mediaPending,.eventVideoBtn.mediaPending{filter:brightness(1.45);box-shadow:0 0 0 3px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.7)}
+
+/* ===== 選手成績入力・現在打者 ===== */
+.masterStatsToggleBtn{height:40px;border:0;border-radius:9px;background:#7c3aed;color:#fff;font-weight:900;padding:0 16px;cursor:pointer}
+.masterStatsToggleBtn.active{background:#f59e0b;color:#111}
+.masterRow.statsMode{grid-template-columns:78px 1fr 76px 76px 76px 42px}
+.masterStatInput{height:38px;min-width:0;border:1px solid #53616b;border-radius:8px;background:#172027;color:#fff;padding:0 7px;font-size:16px;font-weight:800;text-align:center}
+.masterStatHead{font-size:12px;color:#ffd166;text-align:center}
+.currentBatterCard{width:100%;box-sizing:border-box;background:linear-gradient(180deg,#17242d,#0f171d);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:10px 12px;margin-top:10px;text-align:center}
+.currentBatterLabel{font-size:12px;color:#9fdcff;font-weight:800}
+.currentBatterName{font-size:24px;font-weight:1000;line-height:1.15;margin:3px 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.currentBatterStats{display:flex;justify-content:center;gap:18px;font-size:18px;font-weight:900}
+.currentBatterStats strong{color:#ffd54f;font-size:22px}
+
+
+
+/* 現在打者：カウントパネル下部の空きスペースへ横長表示 */
+#panel .currentBatterCardWide{
+  width:calc(100% - 28px);
+  margin:14px 14px 12px;
+  padding:10px 16px 12px;
+  min-height:74px;
+  background:linear-gradient(180deg,#17242d,#0d151a);
+  border:1px solid rgba(159,220,255,.35);
+  border-radius:12px;
+  text-align:left;
+}
+#panel .currentBatterCardWide .currentBatterLabel{
+  font-size:13px;
+  line-height:1;
+  margin-bottom:7px;
+  color:#9fdcff;
+}
+#panel .currentBatterMain{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+#panel .currentBatterCardWide .currentBatterName{
+  flex:1;
+  min-width:0;
+  margin:0;
+  font-size:25px;
+  line-height:1.1;
+  text-align:left;
+}
+#panel .currentBatterCardWide .currentBatterStats{
+  flex-shrink:0;
+  display:flex;
+  align-items:baseline;
+  justify-content:flex-end;
+  gap:20px;
+  font-size:17px;
+  white-space:nowrap;
+}
+#panel .currentBatterCardWide .currentBatterStats strong{
+  font-size:24px;
+}
+
+
+/* ===== 現在打者表示・成績入力 最終レイアウト修正 ===== */
+
+/* 追加した現在打者欄が固定高さのカウント枠に隠れないよう枠そのものを拡張 */
+#panel{
+  height:auto !important;
+  min-height:500px !important;
+  overflow:visible !important;
+  padding-bottom:12px !important;
+}
+#panel .currentBatterCardWide{
+  position:relative !important;
+  width:calc(100% - 28px) !important;
+  box-sizing:border-box !important;
+  margin:14px 14px 0 !important;
+  min-height:78px !important;
+  overflow:visible !important;
+  z-index:2;
+}
+
+/* 成績入力時：打数・安打・本塁打を完全に同じ幅にする */
+.masterRow.assetRow.statsMode{
+  grid-template-columns:78px minmax(115px,1fr) 72px 72px 72px 42px !important;
+  gap:6px !important;
+}
+.masterRow.statsMode .masterStatInput{
+  width:72px !important;
+  min-width:72px !important;
+  max-width:72px !important;
+  box-sizing:border-box !important;
+  padding-left:4px !important;
+  padding-right:4px !important;
+}
+
+
+.masterStatsHeader{
+  display:grid;
+  grid-template-columns:78px minmax(115px,1fr) 72px 72px 72px 42px;
+  gap:6px;
+  align-items:end;
+  margin:2px 0 6px;
+}
+.masterStatsHeader > div{
+  min-width:0;
+  text-align:center;
+  font-size:12px;
+  line-height:1;
+  font-weight:900;
+  color:#ffd166;
+  white-space:nowrap;
+}
+
+
+/* TAG ONE 球速表示 */
+#pitchSpeedControl{
+  margin:12px 14px 0;
+  height:58px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#102b3a,#071821);
+  border:1px solid rgba(0,200,255,.55);
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  color:#fff;font-weight:900;box-shadow:0 0 12px rgba(0,200,255,.16);
+}
+#pitchSpeedControl .pitchSpeedLabel{font-size:17px;color:#9fdcff;}
+#pitchSpeedControlNumber{font-size:34px;line-height:1;}
+#pitchSpeedControl .pitchSpeedUnit{font-size:16px;color:#d8f5ff;}
+
+</style>
+</head>
+<body>
+
+<div id="panelWrap">
+
+<div class="leftControlArea">
+
+<div class="topArea">
+
+<div id="panel">
+
+<button
+id="scoreToggleBtn"
+class="scoreToggleBtn"
+onclick="toggleScoreDisplay()">
+スコア<br>表示
+</button>
+
+<div class="inning" id="inningDisplay">1表</div>
+
+<div class="bases">
+
+<button id="second"
+class="baseBtn"
+onclick="toggleBase('second')">
+</button>
+
+<button id="third"
+class="baseBtn"
+onclick="toggleBase('third')">
+</button>
+
+<button id="first"
+class="baseBtn"
+onclick="toggleBase('first')">
+</button>
+
+</div>
+
+<div class="row">
+
+<div
+id="visitorName"
+class="teamName">
+
+宮
+
+</div>
+
+<div
+id="visitorScore"
+class="score">
+
+0
+
+</div>
+
+<div class="bsoLabel">
+
+B
+
+</div>
+
+<div class="dots">
+
+<button
+id="b1"
+class="dotBtn ball"
+onclick="setBalls(1)">
+</button>
+
+<button
+id="b2"
+class="dotBtn ball"
+onclick="setBalls(2)">
+</button>
+
+<button
+id="b3"
+class="dotBtn ball"
+onclick="setBalls(3)">
+</button>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div
+id="homeName"
+class="teamName">
+
+火
+
+</div>
+
+<div
+id="homeScore"
+class="score">
+
+0
+
+</div>
+
+<div class="bsoLabel">
+
+S
+
+</div>
+
+<div class="dots">
+
+<button
+id="s1"
+class="dotBtn strike"
+onclick="setStrikes(1)">
+</button>
+
+<button
+id="s2"
+class="dotBtn strike"
+onclick="setStrikes(2)">
+</button>
+
+</div>
+
+</div>
+
+<div class="row outRow">
+
+<div class="bsoLabel">
+
+O
+
+</div>
+
+<div class="dots">
+
+<button
+id="o1"
+class="dotBtn out"
+onclick="setOuts(1)">
+</button>
+
+<button
+id="o2"
+class="dotBtn out"
+onclick="setOuts(2)">
+</button>
+
+</div>
+
+</div>
+
+<div id="currentBatterCard" class="currentBatterCard currentBatterCardWide">
+  <div class="currentBatterLabel">現在の打者</div>
+  <div class="currentBatterMain">
+    <div id="currentBatterName" class="currentBatterName">---</div>
+    <div class="currentBatterStats">
+      <span>打率 <strong id="currentBatterAverage">.000</strong></span>
+      <span>本塁打 <strong id="currentBatterHR">0</strong></span>
+    </div>
+  </div>
+</div>
+
+<div id="pitchSpeedControl">
+  <span class="pitchSpeedLabel">球速</span>
+  <span id="pitchSpeedControlNumber">---</span>
+  <span id="pitchSpeedControlUnit" class="pitchSpeedUnit" style="display:none">km</span>
+</div>
+
+</div>
+
+
+<div class="sideControls">
+
+<button class="resetBtn" onclick="resetBases()">
+塁リセット
+</button>
+
+<button class="resetBtn" onclick="resetBS()">
+BSリセット
+</button>
+
+<button class="resetBtn" onclick="resetO()">
+Oリセット
+</button>
+
+<button class="resetBtn" onclick="resetCount()">
+カウント<br>リセット
+</button>
+
+<div class="pitchCountBox">
+
+<div class="pitchCountTitle">
+球数
+</div>
+
+<div
+id="pitcherCountName"
+class="pitcherCountName">
+</div>
+
+<div
+id="pitchCountNumber"
+class="pitchCountNumber">
+0
+</div>
+
+<div class="pitchAdjust">
+
+<button onclick="changePitchCount(-1)">
+−
+</button>
+
+<button onclick="changePitchCount(1)">
+＋
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="actionControls">
+
+<button class="playBtn strikeBtn" onclick="playStrike()">スト<br>ライク</button>
+<button class="playBtn stealBtn" onclick="playSteal()">盗塁</button>
+
+<button class="playBtn ballBtn" onclick="playBall()">ボール</button>
+<button class="playBtn buntBtn" onclick="playSacBunt()">犠牲<br>バント</button>
+
+<button class="playBtn foulBtn" onclick="playFoul()">ファール</button>
+<button class="playBtn sacBtn" onclick="playSacFly()">犠牲<br>フライ</button>
+
+<button class="playBtn hitBtn" onclick="playHit()">ヒット</button>
+<button class="playBtn doubleBtn" onclick="playDouble()">二塁打</button>
+
+<button class="playBtn hrBtn" onclick="playHR()">HR</button>
+<button class="playBtn tripleBtn" onclick="playTriple()">三塁打</button>
+
+<button class="playBtn outBtn" onclick="playOut()">アウト</button>
+<button class="playBtn dpBtn" onclick="playDoublePlay()">ダブル<br>プレー</button>
+
+<button class="playBtn runnerOutBtn" onclick="playRunnerOut()">R<br>アウト</button>
+<button class="playBtn errorBtn" onclick="playErrorReach()">エラー<br>出塁</button>
+
+<button class="playBtn deadBallBtn" onclick="playDeadBall()">デッド<br>ボール</button>
+<button class="playBtn tagupBtn" onclick="playTagUp()">タッチ<br>アップ</button>
+
+</div>
+
+
+</div>
+
+
+<div class="under">
+
+<div class="stepBox">
+
+<button onclick="changeScore(-1)">ー</button>
+
+<div class="stepLabel">
+得点
+</div>
+
+<button onclick="changeScore(1)">＋</button>
+
+</div>
+
+<div class="stepBox">
+
+<button onclick="changeInning(-1)">ー</button>
+
+<div class="stepLabel">
+回
+</div>
+
+<button onclick="changeInning(1)">＋</button>
+
+</div>
+
+<button
+class="changeBtn"
+onclick="changeSide()">
+
+ﾁｪﾝｼﾞ
+
+</button>
+
+<button
+
+class="historyBtn undoBtn"
+
+onclick="undoState()">
+
+戻す
+
+</button>
+
+<button
+
+class="historyBtn redoBtn"
+
+onclick="redoState()">
+
+進む
+
+</button>
+
+<button
+class="allReset"
+onclick="allReset()">
+
+ALL<br>
+リセット
+
+</button>
+
+<button
+class="xGameBtn"
+onclick="swapTeams()">
+
+先後<br>
+入替
+
+</button>
+
+<button
+class="xGameBtn benchSwapBtn"
+onclick="swapBenches()">
+
+ベンチ<br>
+入替
+
+</button>
+
+
+<button
+class="xGameBtn"
+onclick="setXGame()">
+
+X<br>
+ゲーム
+
+</button>
+
+</div>
+
+
+<div class="runningBoard">
+
+<div class="runningHeader">
+
+<button
+id="runningToggleBtn"
+class="runningToggleBtn"
+onclick="toggleRunningDisplay()">
+
+表示
+
+</button>
+
+</div>
+
+<div
+id="runningTable"
+class="runningTable">
+</div>
+
+
+</div>
+
+</div>
+
+<div class="rightArea">
+
+<div class="orderDisplayArea">
+
+<div class="orderDisplayBox">
+
+<div class="orderDisplayTitle">
+
+先攻オーダー
+
+</div>
+
+<div id="visitorOrderDisplay"></div>
+<div id="visitorBatterControl" class="batterControlArea">
+  <button class="batterBtn" onclick="moveBatter('visitor', -1)">▲</button>
+  <button class="batterBtn" onclick="moveBatter('visitor', 1)">▼</button>
+  <button id="visitorBatterShowBtn" class="batterShowBtn" onclick="toggleBatterInfo()">表示</button>
+</div>
+
+</div>
+
+
+<div class="orderDisplayBox">
+
+<div class="orderDisplayTitle">
+
+後攻オーダー
+
+</div>
+
+<div id="homeOrderDisplay"></div>
+
+<div id="homeBatterControl" class="batterControlArea">
+  <button class="batterBtn" onclick="moveBatter('home', -1)">▲</button>
+  <button class="batterBtn" onclick="moveBatter('home', 1)">▼</button>
+  <button id="homeBatterShowBtn" class="batterShowBtn" onclick="toggleBatterInfo()">表示</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="visionControlPanel">
+  <div class="visionControlTitle">球場ビジョン操作</div>
+  <div class="visionControlGrid">
+    <button id="visionGameBtn" class="visionBtn" onclick="setVisionGameMode()">通常表示</button>
+    <button id="visionMatchBtn" class="visionBtn" onclick="setVisionVersusMode()">対戦表示</button>
+    <button id="visionStarterBtn" class="visionBtn" onclick="openStarterModal()">スタメン発表</button>
+    <button id="visionSheetIntroBtn" class="visionBtn" onclick="openSheetIntroModal()">シート紹介</button>
+    <button class="visionBtn clear" onclick="clearVisionGraphic()">グラフィック消去</button>
+    <button class="visionBtn" onclick="setVisionSponsors()">スポンサー設定</button>
+    <button id="visionAssetSyncBtn" class="visionBtn visionAssetBtn" onclick="syncAllVisionPlayerAssets()">選手素材を同期</button>
+    <button id="visionPitchSpeedToggleBtn" class="visionBtn" onclick="toggleVisionPitchSpeed()">球速表示 ON</button>
+    <button id="eventVideoBtnNicePitching" class="visionBtn eventVideoBtn" data-event-video="ナイスピッチング" onclick="playNamedEventVideo('ナイスピッチング')">ナイスピッチング</button>
+    <button id="eventVideoBtnNiceBatting" class="visionBtn eventVideoBtn" data-event-video="ナイスバッティング" onclick="playNamedEventVideo('ナイスバッティング')">ナイスバッティング</button>
+    <button id="eventVideoBtnNiceRun" class="visionBtn eventVideoBtn" data-event-video="ナイスラン" onclick="playNamedEventVideo('ナイスラン')">ナイスラン</button>
+    <button id="eventVideoBtnNicePlay" class="visionBtn eventVideoBtn" data-event-video="ナイスプレイ" onclick="playNamedEventVideo('ナイスプレイ')">ナイスプレイ</button>
+    <button id="eventVideoBtnHomeRun" class="visionBtn eventVideoBtn" data-event-video="ホームラン" onclick="playNamedEventVideo('ホームラン')">ホームラン</button>
+  </div>
+  <div id="visionStatus" class="visionStatus">Firebase: scoreboard/vision</div>
+</div>
+
+
+
+<div id="sheetIntroModal" class="starterModal">
+  <div class="starterPanel">
+    <div class="starterTitle">シート紹介</div>
+    <div class="sheetIntroChoice">
+      <button id="sheetIntroFirstBtn" onclick="selectSheetIntroBatting('first')">先攻</button>
+      <button id="sheetIntroSecondBtn" onclick="selectSheetIntroBatting('second')">後攻</button>
+    </div>
+    <div class="sheetIntroActions">
+      <button class="sheetIntroCloseBtn" onclick="closeSheetIntroModal()">キャンセル</button>
+      <button class="sheetIntroShowBtn" onclick="showSheetIntro()">表示</button>
+    </div>
+  </div>
+</div>
+
+<div id="starterModal" class="starterModal">
+  <div class="starterPanel">
+    <div class="starterTitle">スタメン発表</div>
+    <div class="starterControls">
+      <div id="starterOrderSelect" style="display:none"></div>
+      <button id="starterStartBtn" class="starterStartBtn" onclick="startStarterAnnouncement()" disabled>素材読込中...</button>
+    </div>
+    <div id="starterProgress" class="starterProgress">開始前</div>
+    <div class="starterActions">
+      <button onclick="starterBack()">戻る</button>
+      <button class="next" onclick="starterNext()">次へ</button>
+      <button onclick="resetStarterAnnouncement()">リセット</button>
+      <button class="close" onclick="closeStarterModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div id="bulkModal" class="bulkModal">
+  <div class="bulkPanel">
+    <div class="bulkTopBar">
+      <div id="bulkTitle" class="bulkTitle">一括交代</div>
+      <div class="bulkTopActions">
+        <button type="button" class="bulkSheetPreviewBtn" onclick="showBulkSheetPreview()">シート表示</button>
+        <button type="button" id="bulkReturnGameBtn" class="bulkReturnGameBtn" onclick="commitBulkAndReturnGame()">通常表示へ</button>
+      </div>
+    </div>
+    <div class="bulkPreviewNote">変更中のオーダーをプレビューします。変更箇所は色付きで表示されます。</div>
+    <div id="bulkRows"></div>
+
+    <div class="bulkActions">
+      <button class="bulkCancelBtn" onclick="closeBulkChange()">キャンセル</button>
+      <button class="bulkSaveBtn" onclick="saveBulkChange()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="masterModal" class="masterModal">
+  <div class="masterPanel">
+    <div id="masterTitle" class="masterTitle">マスタ登録</div>
+    <div id="masterRows"></div>
+
+    <div class="masterActions">
+      <button class="masterAddBtn" onclick="addMasterRow()">選手追加</button>
+      <button id="masterStatsToggleBtn" class="masterStatsToggleBtn" onclick="toggleMasterStatsMode()">成績入力</button>
+      <button class="masterCancelBtn" onclick="closeMasterModal()">キャンセル</button>
+      <button class="masterSaveBtn" onclick="saveMasterModal()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* レイアウトのみ変更：球場ビジョン操作をオーダー欄の下へ移動 */
+(function(){
+  const rightArea=document.querySelector('.rightArea');
+  const vision=document.querySelector('.visionControlPanel');
+  if(rightArea && vision) rightArea.appendChild(vision);
+})();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbLQkD_YaJGf-kZ7D7Y4xZDNp9aL6B1sg",
+  authDomain: "hinokuni-salamanders.firebaseapp.com",
+  databaseURL: "https://hinokuni-salamanders-default-rtdb.firebaseio.com",
+  projectId: "hinokuni-salamanders",
+  storageBucket: "hinokuni-salamanders.firebasestorage.app",
+  messagingSenderId: "821413110356",
+  appId: "1:821413110356:web:cbf49aa2f2d60772f583c1",
+  measurementId: "G-C6MVCF3MV9"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const SCOREBOARD_REF =
+  firebase.database().ref("scoreboard/state");
+const PLAYER_VIDEO_REF =
+  firebase.database().ref("scoreboard/playerVideoManualV2");
+const PLAYER_MUSIC_REF =
+  firebase.database().ref("scoreboard/playerMusic");
+const MEDIA_ACK_REF =
+  firebase.database().ref("scoreboard/mediaAck");
+const YOUTUBE_REF =
+  firebase.database().ref("scoreboard/youtube");
+const VISION_REF =
+  firebase.database().ref("scoreboard/vision");
+const TEAM_MASTERS_REF =
+  firebase.database().ref("scoreboard/teamMasters");
+const PITCH_SPEED_REF =
+  firebase.database().ref("scoreboard/pitchSpeed");
+const FIREBASE_STORAGE =
+  firebase.storage();
+
+const visionStorageCatalog = { visitor:{photos:[],names:[],teamFolder:""}, home:{photos:[],names:[],teamFolder:""} };
+let teamLogoCatalog = [];
+
+let isApplyingRemoteState = false;
+
+const KEY = "salamanders_scoreboard_state_v1";
+const TEAM_MASTER_KEY = "salamanders_team_masters_v1";
+
+const STARTER_OLD_NAME = "内山 綾斗";
+const STARTER_NEW_NAME = "内山 稜斗";
+
+function replaceStarterOldNameDeep(value){
+  if(Array.isArray(value)) return value.map(replaceStarterOldNameDeep);
+  if(value && typeof value === "object"){
+    const out={};
+    for(const [k,v] of Object.entries(value)) out[k]=replaceStarterOldNameDeep(v);
+    return out;
+  }
+  if(typeof value === "string" && value.trim()===STARTER_OLD_NAME) return STARTER_NEW_NAME;
+  return value;
+}
+
+async function purgeStarterOldNameEverywhere(){
+  try{
+    // 1) scoreboard/state
+    const stateSnap=await SCOREBOARD_REF.once("value");
+    const fixedState=replaceStarterOldNameDeep(stateSnap.val()||{});
+    await SCOREBOARD_REF.set(fixedState);
+
+    // 2) scoreboard/teamMasters
+    const masterSnap=await TEAM_MASTERS_REF.once("value");
+    const fixedMasters=replaceStarterOldNameDeep(masterSnap.val()||{});
+    await TEAM_MASTERS_REF.set(fixedMasters);
+
+    // 3) scoreboard/vision (starter snapshot / playerName / assetsを含む)
+    const visionSnap=await VISION_REF.once("value");
+    const fixedVision=replaceStarterOldNameDeep(visionSnap.val()||{});
+    await VISION_REF.set(fixedVision);
+
+    // 4) browser localStorage
+    for(let i=0;i<localStorage.length;i++){
+      const key=localStorage.key(i);
+      if(!key) continue;
+      const raw=localStorage.getItem(key);
+      if(!raw || !raw.includes(STARTER_OLD_NAME)) continue;
+      try{
+        const parsed=JSON.parse(raw);
+        localStorage.setItem(key,JSON.stringify(replaceStarterOldNameDeep(parsed)));
+      }catch(_){
+        localStorage.setItem(key,raw.split(STARTER_OLD_NAME).join(STARTER_NEW_NAME));
+      }
+    }
+
+    // current in-memory objects
+    if(typeof state!=="undefined" && state){
+      const fixed=replaceStarterOldNameDeep(state);
+      Object.keys(state).forEach(k=>delete state[k]);
+      Object.assign(state,fixed);
+    }
+    if(typeof visionState!=="undefined" && visionState){
+      visionState=replaceStarterOldNameDeep(visionState);
+    }
+    if(typeof teamMastersCache!=="undefined" && teamMastersCache){
+      teamMastersCache=replaceStarterOldNameDeep(teamMastersCache);
+    }
+
+    console.log("旧氏名データを完全移行しました:",STARTER_OLD_NAME,"→",STARTER_NEW_NAME);
+  }catch(e){
+    console.error("旧氏名データ移行失敗",e);
+  }
+}
+
+const ORDER_LABELS = ["1","2","3","4","5","6","7","8","9","P"];
+const POSITION_OPTIONS = ["","1","2","3","4","5","6","7","8","9","D","H","R","P"];
+const DEFAULT_STATE = {
+  inning: 1,
+  half: "表",
+  visitorName: "大",
+  homeName: "火",
+  visitorScore: 0,
+  homeScore: 0,
+  balls: 0,
+  strikes: 0,
+  outs: 0,
+  showRunning: false,
+showScore: true,
+  bases: { first: false, second: false, third: false },
+
+  running: {
+  visitorName: "宮　崎",
+  homeName: "火の国",
+  visitor: ["","","","","","","","","","","",""],
+  home: ["","","","","","","","","","","",""]
+},
+
+orders: {
+  visitor: [
+    { order: "1", position: "9", name: "岩下 竜馬" },
+    { order: "2", position: "5", name: "川原 雄大" },
+    { order: "3", position: "4", name: "幸野 祐介" },
+    { order: "4", position: "8", name: "米田 晃" },
+    { order: "5", position: "D", name: "杉山 幸太郎" },
+    { order: "6", position: "3", name: "水本 大志" },
+    { order: "7", position: "2", name: "本田 凪汐" },
+    { order: "8", position: "7", name: "アベラルド" },
+    { order: "9", position: "6", name: "西原 凜" },
+    { order: "P", position: "P", name: "西森 弘貴" }
+  ],
+  home: [
+    { order: "1", position: "3", name: "迫 結哉" },
+    { order: "2", position: "8", name: "古屋 旺星" },
+    { order: "3", position: "9", name: "池内 匠生" },
+    { order: "4", position: "D", name: "松山 佳暉" },
+    { order: "5", position: "7", name: "小林 優輝" },
+    { order: "6", position: "2", name: "中庭 永勝" },
+    { order: "7", position: "4", name: "村上 拓哉" },
+    { order: "8", position: "6", name: "寛知" },
+    { order: "9", position: "5", name: "真兵" },
+    { order: "P", position: "P", name: "堀田 智貴" }
+  ]
+},
+
+currentBatter: {
+  visitor: 0,
+  home: 0
+},
+
+pitchCounts: {
+  visitor: {},
+  home: {}
+},
+
+showBatterInfo: true,
+
+videoPlayback: {
+  show: false,
+  side: "",
+  name: "",
+  filename: "",
+  storagePath: "",
+  url: "",
+  requestId: 0
+},
+
+musicPlayback: {
+  show: false,
+  side: "",
+  name: "",
+  filename: "",
+  storagePath: "",
+  url: "",
+  requestId: 0
+},
+
+playerImage: {
+
+  show: false,
+
+  type: "",
+
+  side: "",
+
+  name: "",
+
+  filename: ""
+
+},
+
+showOrderSide: "",
+firstBatSide: "visitor",
+
+teamInfo: {
+  visitor: {
+    fullName: "先攻",
+    shortName: "先",
+    teamLogoFile: ""
+  },
+  home: {
+    fullName: "後攻",
+    shortName: "後",
+    teamLogoFile: ""
+  }
+},
+
+playerMasters: {
+  visitor: [],
+  home: []
+}
+};
+
+const DEFAULT_YOUTUBE_STATE = {
+  showRunning: false,
+  showScore: true,
+  showBatterInfo: true,
+  showOrderSide: "",
+  playerImage: {
+    show: false,
+    type: "",
+    side: "",
+    name: "",
+    filename: "",
+    url: ""
+  }
+};
+
+const DEFAULT_VISION_STATE = {
+  mode: "GAME",
+  graphic: null,
+  matchBackground: null,
+  sponsor: null
+};
+
+let youtubeState = JSON.parse(JSON.stringify(DEFAULT_YOUTUBE_STATE));
+let visionState = JSON.parse(JSON.stringify(DEFAULT_VISION_STATE));
+
+function getDefaultState() {
+
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+}
+
+let channel = null;
+try { channel = new BroadcastChannel("salamanders_scoreboard_channel"); } catch(e) {}
+let state = loadState();
+normalizeOrders();
+
+
+let pitchSpeedControlHideTimer = null;
+PITCH_SPEED_REF.on("value", snapshot => {
+  const data = snapshot.val() || {};
+  const el = document.getElementById("pitchSpeedControlNumber");
+  const unit = document.getElementById("pitchSpeedControlUnit");
+  const speed = Number(data.speed);
+
+  if (pitchSpeedControlHideTimer) {
+    clearTimeout(pitchSpeedControlHideTimer);
+    pitchSpeedControlHideTimer = null;
+  }
+
+  if (Number.isFinite(speed)) {
+    if (el) el.textContent = String(speed);
+    if (unit) unit.style.display = "";
+    pitchSpeedControlHideTimer = setTimeout(() => {
+      if (el) el.textContent = "---";
+      if (unit) unit.style.display = "none";
+    }, 4000);
+  } else {
+    if (el) el.textContent = "---";
+    if (unit) unit.style.display = "none";
+  }
+});
+
+SCOREBOARD_REF.on("value", snapshot => {
+  const remoteState = snapshot.val();
+
+  if (!remoteState) return;
+  const remoteComparable = { ...remoteState };
+  delete remoteComparable.__latencyProbe;
+  lastSentCommonJson = JSON.stringify(remoteComparable);
+
+  isApplyingRemoteState = true;
+
+  state = {
+    ...getDefaultState(),
+    ...state,
+    ...remoteState,
+    showRunning: youtubeState.showRunning,
+    showScore: youtubeState.showScore,
+    showBatterInfo: youtubeState.showBatterInfo,
+    showOrderSide: youtubeState.showOrderSide,
+    playerImage: { ...youtubeState.playerImage }
+  };
+
+  normalizeOrders();
+
+  localStorage.setItem(KEY, JSON.stringify(state));
+  render();
+  // 受信したスコア更新だけでは素材の再先読みを開始しない。
+
+  isApplyingRemoteState = false;
+});
+
+YOUTUBE_REF.on("value", snapshot => {
+  const remote = snapshot.val();
+  if (!remote) return;
+  lastSentYoutubeJson = JSON.stringify(remote);
+
+  youtubeState = {
+    ...JSON.parse(JSON.stringify(DEFAULT_YOUTUBE_STATE)),
+    ...remote,
+    playerImage: {
+      ...DEFAULT_YOUTUBE_STATE.playerImage,
+      ...(remote.playerImage || {})
+    }
+  };
+
+  state.showRunning = youtubeState.showRunning;
+  state.showScore = youtubeState.showScore;
+  state.showBatterInfo = youtubeState.showBatterInfo;
+  state.showOrderSide = youtubeState.showOrderSide;
+  state.playerImage = { ...youtubeState.playerImage };
+
+  localStorage.setItem(KEY, JSON.stringify(state));
+  render();
+});
+
+// 操作直後のUIをFirebase往復から切り離す。最新のローカル操作が反映されるまで古い通知で戻さない。
+let visionPendingPatch=null;
+let visionPendingUntil=0;
+function applyVisionLocalPatch(patch){
+  const next={...visionState};
+  for(const [key,value] of Object.entries(patch)){
+    if(key.includes("/")){
+      const parts=key.split("/");let target=next;
+      for(let i=0;i<parts.length-1;i++)target=target[parts[i]]={...(target[parts[i]]||{})};
+      target[parts.at(-1)]=value;
+    }else next[key]=value;
+  }
+  visionState=next;updateVisionStatus();
+  return next;
+}
+async function quickVisionUpdate(patch){
+  visionPendingPatch=patch;visionPendingUntil=Date.now()+5000;
+  applyVisionLocalPatch(patch);
+  try{await VISION_REF.update(patch)}catch(error){
+    visionPendingPatch=null;console.error("ビジョン操作送信失敗",error);
+    VISION_REF.once("value").then(s=>{visionState=s.val()||{};updateVisionStatus()});
+    alert("ビジョンへの操作送信に失敗しました。通信状態を確認してください。");
+  }
+}
+VISION_REF.on("value", snapshot => {
+  const received=snapshot.val()||{};
+  if(visionPendingPatch){
+    const matches=Object.entries(visionPendingPatch).every(([key,value])=>{
+      const actual=key.split("/").reduce((obj,part)=>obj?.[part],received);
+      return JSON.stringify(actual)===JSON.stringify(value);
+    });
+    if(matches||Date.now()>visionPendingUntil)visionPendingPatch=null;
+    else return;
+  }
+  visionState = {
+    ...JSON.parse(JSON.stringify(DEFAULT_VISION_STATE)),
+    ...(snapshot.val() || {})
+  };
+  updateVisionStatus();
+  updateStarterPreloadUI();
+});
+
+PLAYER_VIDEO_REF.on("value", snapshot => {
+  const playback = snapshot.val();
+
+  if (playback) {
+    state.videoPlayback = {
+  show: true,
+  side: String(playback.side || ""),
+  name: String(playback.name || ""),
+  filename: String(playback.filename || ""),
+  storagePath: String(playback.storagePath || ""),
+  url: String(playback.url || ""),
+  requestId: playback.requestId || 0,
+  loop: !!playback.loop,
+  holdLastFrame: !!playback.holdLastFrame
+};
+  } else {
+    state.videoPlayback = {
+  show: false,
+  side: "",
+  name: "",
+  filename: "",
+  storagePath: "",
+  url: "",
+  requestId: 0
+};
+  }
+
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(state)
+  );
+
+  render();
+  updateEventVideoButtonState();
+});
+
+PLAYER_MUSIC_REF.on("value", snapshot => {
+  const playback = snapshot.val();
+
+  if (playback) {
+    state.musicPlayback = {
+  show: true,
+  side: String(playback.side || ""),
+  name: String(playback.name || ""),
+  filename: String(playback.filename || ""),
+  storagePath: String(playback.storagePath || ""),
+  url: String(playback.url || ""),
+  requestId: playback.requestId || 0
+};
+  } else {
+    state.musicPlayback = {
+  show: false,
+  side: "",
+  name: "",
+  filename: "",
+  storagePath: "",
+  url: "",
+  requestId: 0
+};
+  }
+
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(state)
+  );
+
+  render();
+});
+
+let undoStack = [];
+let redoStack = [];
+let isHistoryMoving = false;
+
+function normalizeOrders() {
+  if (!state.orders || typeof state.orders !== "object") {
+    state.orders = {};
+  }
+
+  ["visitor", "home"].forEach(side => {
+    if (!Array.isArray(state.orders[side])) {
+      state.orders[side] = [];
+    }
+
+    state.orders[side] = ORDER_LABELS.map((label, index) => {
+      const item = state.orders[side][index] || {};
+
+      return {
+        order: label,
+        position: item.position || "",
+        number: item.number || "",
+        name: item.name || ""
+      };
+    });
+  });
+}
+
+function loadState() {
+  try {
+    return {
+      ...getDefaultState(),
+      ...JSON.parse(localStorage.getItem(KEY) || "{}")
+    };
+  } catch(e) {
+    return getDefaultState();
+  }
+}
+
+function pushHistory() {
+  if (isHistoryMoving) return;
+
+  undoStack.push(JSON.parse(JSON.stringify(state)));
+
+  if (undoStack.length > 50) {
+    undoStack.shift();
+  }
+
+  redoStack = [];
+}
+
+function getYoutubeStateFromState() {
+  return {
+    showRunning: !!state.showRunning,
+    showScore: state.showScore !== false,
+    showBatterInfo: state.showBatterInfo !== false,
+    showOrderSide: state.showOrderSide || "",
+    playerImage: {
+      ...DEFAULT_YOUTUBE_STATE.playerImage,
+      ...(state.playerImage || {})
+    }
+  };
+}
+
+function getCommonScoreboardState() {
+  const common = JSON.parse(JSON.stringify(state));
+
+  // YouTube専用表示状態は scoreboard/youtube に分離
+  delete common.showRunning;
+  delete common.showScore;
+  delete common.showBatterInfo;
+  delete common.showOrderSide;
+  delete common.playerImage;
+
+  // ビジョン専用の再生指示は専用ノードに分離
+  delete common.videoPlayback;
+  delete common.musicPlayback;
+
+  return common;
+}
+
+let lastSentCommonJson = null;
+let lastSentYoutubeJson = null;
+function save() {
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(state)
+  );
+
+  if (channel) {
+    channel.postMessage({
+      type: "scoreboard-update",
+      state
+    });
+  }
+
+  if (!isApplyingRemoteState) {
+    const commonState = getCommonScoreboardState();
+    youtubeState = getYoutubeStateFromState();
+    // 比較用データに計測情報を混ぜない。操作内容が同じなら送信しない。
+    const commonJson = JSON.stringify(commonState);
+    const youtubeJson = JSON.stringify(youtubeState);
+    if (commonJson !== lastSentCommonJson) {
+      const previousJson = lastSentCommonJson;
+      lastSentCommonJson = commonJson;
+      let previous = null;
+      try { previous = previousJson ? JSON.parse(previousJson) : null; } catch (_e) {}
+      if (previous) delete previous.__latencyProbe;
+      const changedKeys = previous ? [...new Set([...Object.keys(previous), ...Object.keys(commonState)])]
+        .filter(k => JSON.stringify(previous[k]) !== JSON.stringify(commonState[k])) : [];
+      // カウント等の独立した項目のみ差分送信。複雑な変更は従来方式を維持。
+      const partialKeys = ["balls", "strikes", "outs", "bases", "pitchCounts", "inning", "half", "visitorScore", "homeScore"];
+      const canPatch = previous && changedKeys.length > 0 && changedKeys.every(k => partialKeys.includes(k));
+      const seq = (window.__latencyProbeSeq = (window.__latencyProbeSeq || 0) + 1);
+      const probe = { sentAt: Date.now(), seq };
+      const perfStarted = performance.now();
+      const payload = canPatch ? { __latencyProbe: probe } : { ...commonState, __latencyProbe: probe };
+      if (canPatch) for (const key of changedKeys) payload[key] = commonState[key] ?? null;
+      console.log(`[速度計測][操作盤] 送信開始 seq=${seq} ${canPatch ? "差分:" + changedKeys.join(",") : "通常送信"}`);
+      const sendTask = canPatch ? SCOREBOARD_REF.update(payload) : SCOREBOARD_REF.set(payload);
+      sendTask.then(() => {
+        console.log(`[速度計測][操作盤] Firebase送信完了 seq=${seq} ${Math.round(performance.now() - perfStarted)}ms`);
+      }).catch(err => {
+        lastSentCommonJson = null;
+        console.error("スコア送信失敗:", err);
+      });
+    }
+    if (youtubeJson !== lastSentYoutubeJson) {
+      lastSentYoutubeJson = youtubeJson;
+      YOUTUBE_REF.set(youtubeState).catch(err => {
+        lastSentYoutubeJson = null;
+        console.error("YouTube状態送信失敗:", err);
+      });
+    }
+  }
+
+  render();
+}
+function render() {
+  document.getElementById("inningDisplay").textContent = `${state.inning}${state.half}`;
+  // 左右のオーダー表示は visitor=3塁側、home=1塁側で固定するが、
+  // 左上のスコア表示2段は「上=先攻、下=後攻」として表示する。
+  const firstScoreSide = state.firstBatSide === "home" ? "home" : "visitor";
+  const secondScoreSide = firstScoreSide === "visitor" ? "home" : "visitor";
+  const scoreName = side =>
+    state.teamInfo?.[side]?.shortName ||
+    (side === "visitor" ? state.visitorName : state.homeName) ||
+    "";
+  const scoreValue = side =>
+    side === "visitor" ? (state.visitorScore ?? "") : (state.homeScore ?? "");
+
+  document.getElementById("visitorName").textContent = scoreName(firstScoreSide);
+  document.getElementById("homeName").textContent = scoreName(secondScoreSide);
+  document.getElementById("visitorScore").textContent = scoreValue(firstScoreSide);
+  document.getElementById("homeScore").textContent = scoreValue(secondScoreSide);
+  ["b1","b2","b3","s1","s2","o1","o2","first","second","third"].forEach(id => document.getElementById(id).classList.remove("on"));
+  for (let i=1;i<=state.balls;i++) document.getElementById(`b${i}`)?.classList.add("on");
+  for (let i=1;i<=state.strikes;i++) document.getElementById(`s${i}`)?.classList.add("on");
+  for (let i=1;i<=state.outs;i++) document.getElementById(`o${i}`)?.classList.add("on");
+  Object.entries(state.bases).forEach(([k,v]) => document.getElementById(k).classList.toggle("on", !!v));
+renderRunningScore();
+renderOrderDisplay();
+renderPitchCountControl();
+renderCurrentBatterStats();
+const runningToggleBtn =
+document.getElementById(
+"runningToggleBtn"
+);
+
+if (
+runningToggleBtn
+) {
+
+runningToggleBtn.textContent =
+state.showRunning
+?
+"非表示"
+:
+"表示";
+
+runningToggleBtn.classList.toggle(
+"active",
+!!state.showRunning
+);
+
+}
+
+const scoreToggleBtn =
+document.getElementById("scoreToggleBtn");
+
+if (scoreToggleBtn) {
+  scoreToggleBtn.innerHTML =
+    state.showScore === false
+      ? "スコア<br>表示"
+      : "スコア<br>非表示";
+
+  scoreToggleBtn.classList.toggle(
+    "active",
+    state.showScore !== false
+  );
+}
+
+renderOrderOverlay();
+
+}
+
+
+function toggleBase(base) {
+  pushHistory();
+  state.bases[base] = !state.bases[base];
+  save();
+}
+
+function setBalls(n) {
+  pushHistory();
+
+  if (state.balls >= n) {
+    state.balls = n - 1;
+  } else {
+    state.balls = n;
+  }
+
+  save();
+}
+
+function setStrikes(n) {
+pushHistory();
+  if (state.strikes >= n) {
+    state.strikes = n - 1;
+  } else {
+    state.strikes = n;
+  }
+  save();
+}
+
+function setOuts(n) {
+pushHistory();
+  if (state.outs >= n) {
+    state.outs = n - 1;
+  } else {
+    state.outs = n;
+  }
+  save();
+}
+function resetBases() { state.bases = { first:false, second:false, third:false }; save(); }
+function resetBS() { state.balls = 0; state.strikes = 0; save(); }
+function resetO() { state.outs = 0; save(); }
+function resetCount() { state.balls = 0; state.strikes = 0; state.outs = 0; save(); }
+function allReset() {
+  pushHistory();
+
+  // チーム情報・オーダー・選手マスタは維持し、試合の得点とカウントだけをリセットする
+  state.visitorScore = 0;
+  state.homeScore = 0;
+  state.balls = 0;
+  state.strikes = 0;
+  state.outs = 0;
+  state.bases = { first:false, second:false, third:false };
+
+  // イニング別得点もリセット（チーム名は維持）
+  if (!state.running) state.running = {};
+  state.running.visitorName = state.teamInfo?.visitor?.fullName || state.running.visitorName || state.visitorName || "";
+  state.running.homeName = state.teamInfo?.home?.fullName || state.running.homeName || state.homeName || "";
+  state.running.visitor = ["","","","","","","","","","",""];
+  state.running.home = ["","","","","","","","","","",""];
+
+  // 新しい試合開始時の位置へ戻す
+  state.inning = 1;
+  state.half = "表";
+  state.currentBatter = { visitor:0, home:0 };
+  state.pitchCounts = { visitor:{}, home:{} };
+
+  save();
+
+  // YouTube表示側の「本日の最高球速」を全投手分リセット
+  // 別PCでも連動できるようFirebase経由でリセット通知を送る
+  firebase.database().ref("scoreboard/pitchSpeedReset").set({
+    timestamp: Date.now()
+  }).catch(err => console.error("最高球速リセット通知失敗:", err));
+}
+function changeInning(delta) {
+pushHistory();
+  if (delta > 0) {
+    if (state.half === "表") state.half = "裏";
+    else { state.inning = Math.min(15, state.inning + 1); state.half = "表"; }
+  } else {
+    if (state.half === "裏") state.half = "表";
+    else { state.inning = Math.max(1, state.inning - 1); state.half = "裏"; }
+  }
+  save();
+}
+function changeScore(delta) {
+pushHistory();
+  const scoreKey = getBattingSide() === "visitor" ? "visitorScore" : "homeScore";
+  const runSide = getBattingSide();
+  const inningIndex = Math.max(0, Math.min(11, state.inning - 1));
+
+  const currentScore = Number(state[scoreKey] || 0);
+  const nextScore = Math.max(0, currentScore + delta);
+  const actualDelta = nextScore - currentScore;
+
+  state[scoreKey] = nextScore;
+
+  if (!state.running) {
+    state.running = {
+      visitorName: state.visitorName || "大",
+      homeName: state.homeName || "火",
+      visitor: ["","","","","","","","","","","",""],
+      home: ["","","","","","","","","","","",""]
+    };
+  }
+
+  const currentInningScore = Number(state.running[runSide][inningIndex] || 0);
+  const nextInningScore = Math.max(0, currentInningScore + actualDelta);
+
+  state.running[runSide][inningIndex] =
+    nextInningScore === 0 ? "" : String(nextInningScore);
+
+  save();
+}
+
+function getBattingSide() {
+  return getBattingSide();
+}
+
+function getPitchingSide() {
+  return getDefenseSide();
+}
+
+function getCurrentPitcher(side = getPitchingSide()) {
+  return state.orders?.[side]?.find(item => item.order === "P") || {};
+}
+
+function getPitcherKey(side = getPitchingSide()) {
+  const pitcher = getCurrentPitcher(side);
+  return pitcher.name || "未登録投手";
+}
+
+function ensurePitchCount(side = getPitchingSide()) {
+  if (!state.pitchCounts) {
+    state.pitchCounts = {
+      visitor: {},
+      home: {}
+    };
+  }
+
+  if (!state.pitchCounts[side]) {
+    state.pitchCounts[side] = {};
+  }
+
+  const key = getPitcherKey(side);
+
+  if (state.pitchCounts[side][key] == null) {
+    state.pitchCounts[side][key] = 0;
+  }
+
+  return key;
+}
+
+function addPitchCount(count = 1) {
+  const side = getPitchingSide();
+  const key = ensurePitchCount(side);
+
+  state.pitchCounts[side][key] =
+    Math.max(0, Number(state.pitchCounts[side][key] || 0) + count);
+}
+
+function changePitchCount(count) {
+  pushHistory();
+  addPitchCount(count);
+  save();
+}
+
+function renderPitchCountControl() {
+  const side = getPitchingSide();
+  const pitcher = getCurrentPitcher(side);
+  const key = ensurePitchCount(side);
+
+  const nameEl = document.getElementById("pitcherCountName");
+  const countEl = document.getElementById("pitchCountNumber");
+
+  if (nameEl) {
+    nameEl.textContent = pitcher.name || "未登録投手";
+  }
+
+  if (countEl) {
+    countEl.textContent = state.pitchCounts?.[side]?.[key] || 0;
+  }
+}
+
+function getCurrentBatterPlayer(side=getBattingSide()){
+  const index=Math.max(0,Math.min(8,Number(state.currentBatter?.[side]||0)));
+  return {index,player:state.orders?.[side]?.[index]||null};
+}
+function findMasterForOrderPlayer(side,player){
+  if(!player)return null;
+  const masters=state.playerMasters?.[side]||[];
+  return masters.find(m=>String(m.number||"")===String(player.number||"") && String(m.name||"").trim()===String(player.name||"").trim())
+    ||masters.find(m=>String(m.name||"").trim()===String(player.name||"").trim())
+    ||null;
+}
+function recordBatterStat(side,{atBat=0,hit=0,homeRun=0}={}){
+  const {player}=getCurrentBatterPlayer(side);
+  const master=findMasterForOrderPlayer(side,player);
+  if(!master)return;
+  master.atBats=Math.max(0,Number(master.atBats||0)+atBat);
+  master.hits=Math.max(0,Number(master.hits||0)+hit);
+  master.homeRuns=Math.max(0,Number(master.homeRuns||0)+homeRun);
+  // Firebaseチームマスタも試合中に更新。試合操作自体は待たせない。
+  const info=state.teamInfo?.[side];
+  if(info?.fullName)saveTeamMaster(info,state.playerMasters[side]).catch(e=>console.error("成績マスタ更新失敗",e));
+}
+function formatBattingAverage(hits,atBats){
+  const ab=Number(atBats||0),h=Number(hits||0);
+  if(ab<=0)return ".000";
+  return (h/ab).toFixed(3).replace(/^0/,"");
+}
+function renderCurrentBatterStats(){
+  const side=getBattingSide();
+  const {player}=getCurrentBatterPlayer(side);
+  const master=findMasterForOrderPlayer(side,player)||{};
+  const nameEl=document.getElementById("currentBatterName");
+  const avgEl=document.getElementById("currentBatterAverage");
+  const hrEl=document.getElementById("currentBatterHR");
+  if(nameEl)nameEl.textContent=player?.name||"未登録";
+  if(avgEl)avgEl.textContent=formatBattingAverage(master.hits,master.atBats);
+  if(hrEl)hrEl.textContent=String(Number(master.homeRuns||0));
+}
+
+function advanceBatter(side) {
+  if (!state.currentBatter) {
+    state.currentBatter = { visitor: 0, home: 0 };
+  }
+
+  const current = Number(state.currentBatter[side] || 0);
+  state.currentBatter[side] = current >= 8 ? 0 : current + 1;
+}
+
+function addRuns(count) {
+  const scoreKey = getBattingSide() === "visitor" ? "visitorScore" : "homeScore";
+  const runSide = getBattingSide();
+  const inningIndex = Math.max(0, Math.min(11, state.inning - 1));
+
+  state[scoreKey] = Number(state[scoreKey] || 0) + count;
+
+  if (!state.running) {
+    state.running = {
+      visitorName: state.visitorName || "大",
+      homeName: state.homeName || "火",
+      visitor: ["","","","","","","","","","","",""],
+      home: ["","","","","","","","","","","",""]
+    };
+  }
+
+  const current = Number(state.running[runSide][inningIndex] || 0);
+  state.running[runSide][inningIndex] = String(current + count);
+}
+
+function resetBSOnly() {
+  state.balls = 0;
+  state.strikes = 0;
+}
+
+function addOut() {
+  state.outs = Number(state.outs || 0) + 1;
+
+  if (state.outs >= 3) {
+    endHalfInning(false);
+  }
+}
+
+function endHalfInning(advanceBatterFlag) {
+  const runSide = getBattingSide();
+  const inningIndex = Math.max(0, Math.min(11, state.inning - 1));
+
+  if (!state.running) {
+    state.running = {
+      visitorName: state.visitorName || "大",
+      homeName: state.homeName || "火",
+      visitor: ["","","","","","","","","","","",""],
+      home: ["","","","","","","","","","","",""]
+    };
+  }
+
+  if (
+    state.running[runSide][inningIndex] === "" ||
+    state.running[runSide][inningIndex] == null
+  ) {
+    state.running[runSide][inningIndex] = "0";
+  }
+
+  if (advanceBatterFlag) {
+    advanceBatter(runSide);
+  }
+
+  state.balls = 0;
+  state.strikes = 0;
+  state.outs = 0;
+  state.bases = { first:false, second:false, third:false };
+
+  if (state.half === "表") {
+    state.half = "裏";
+  } else {
+    state.inning = Math.min(15, state.inning + 1);
+    state.half = "表";
+  }
+
+  save();
+}
+
+function playStrike() {
+  pushHistory();
+
+addPitchCount(1);
+
+  const side = getBattingSide();
+
+  if (state.strikes >= 2) {
+    recordBatterStat(side,{atBat:1});
+    resetBSOnly();
+    advanceBatter(side);
+    addOut();
+
+    if (state.outs < 3) {
+      save();
+    }
+  } else {
+    state.strikes++;
+    save();
+  }
+}
+
+function playBall() {
+pushHistory();
+
+addPitchCount(1);
+  const side = getBattingSide();
+
+  if (state.balls >= 3) {
+    resetBSOnly();
+    advanceBatter(side);
+
+    const first = !!state.bases.first;
+    const second = !!state.bases.second;
+    const third = !!state.bases.third;
+
+    if (first && second && third) {
+      addRuns(1);
+    }
+
+    if (first && second) {
+      state.bases.third = true;
+    }
+
+    if (first) {
+      state.bases.second = true;
+    }
+
+    state.bases.first = true;
+
+    save();
+  } else {
+    state.balls++;
+    save();
+  }
+}
+
+function playFoul() {
+  pushHistory();
+
+  addPitchCount(1);
+
+  if (state.strikes < 2) {
+    state.strikes++;
+  }
+
+  save();
+
+  playFoulVideo();
+}
+
+function playHit() {
+  pushHistory();
+
+addPitchCount(1);
+
+  const side = getBattingSide();
+
+  const first = !!state.bases.first;
+  const second = !!state.bases.second;
+  const third = !!state.bases.third;
+
+  // 三塁ランナーがいた場合のみ1点追加
+  if (third) {
+    addRuns(1);
+  }
+
+  // ランナーをひとつずつ進める
+  state.bases.third = second;
+  state.bases.second = first;
+  state.bases.first = true;
+
+  // カウントリセット、打者を次へ
+  recordBatterStat(side,{atBat:1,hit:1});
+  resetBSOnly();
+  advanceBatter(side);
+
+  save();
+}
+
+function playHR() {
+pushHistory();
+
+addPitchCount(1);
+
+  const side = getBattingSide();
+
+  let runnerCount = 0;
+
+  if (state.bases.first) runnerCount++;
+  if (state.bases.second) runnerCount++;
+  if (state.bases.third) runnerCount++;
+
+  addRuns(runnerCount + 1);
+
+  state.bases = {
+    first: false,
+    second: false,
+    third: false
+  };
+
+  recordBatterStat(side,{atBat:1,hit:1,homeRun:1});
+  resetBSOnly();
+  advanceBatter(side);
+  save();
+}
+
+function playOut() {
+  pushHistory();
+
+addPitchCount(1);
+
+  const side = getBattingSide();
+
+  recordBatterStat(side,{atBat:1});
+  resetBSOnly();
+  advanceBatter(side);
+  addOut();
+
+  if (state.outs < 3) {
+    save();
+  }
+}
+
+function playRunnerOut() {
+  pushHistory();
+
+  addOut();
+
+  if (state.outs < 3) {
+    save();
+  }
+}
+
+function changeSide() {
+  endHalfInning(true);
+}
+
+function setXGame() {
+  if (!state.running) {
+    state.running = {
+      visitorName: state.visitorName || "大",
+      homeName: state.homeName || "火",
+      visitor: ["","","","","","","","","","","",""],
+      home: ["","","","","","","","","","","",""]
+    };
+  }
+
+  const inningIndex = Math.max(0, Math.min(11, state.inning - 1));
+
+  if (state.half === "表") {
+    if (
+      state.running.visitor[inningIndex] === "" ||
+      state.running.visitor[inningIndex] == null
+    ) {
+      state.running.visitor[inningIndex] = "0";
+    }
+
+    state.running.home[inningIndex] = "X";
+  } else {
+    const current = String(state.running.home[inningIndex] || "");
+
+    if (current === "") {
+      state.running.home[inningIndex] = "X";
+    } else {
+      const numberOnly = current.match(/\d+/);
+      const score = numberOnly ? numberOnly[0] : "0";
+      state.running.home[inningIndex] = `${score}x`;
+    }
+  }
+
+  save();
+}
+
+function getBattingSide() {
+  const first = state.firstBatSide === "home" ? "home" : "visitor";
+  const second = first === "visitor" ? "home" : "visitor";
+  return state.half === "表" ? first : second;
+}
+
+function getDefenseSide() {
+  return getBattingSide() === "visitor" ? "home" : "visitor";
+}
+
+function swapTeams() {
+  pushHistory();
+
+  // visitor = 左（3塁側）、home = 右（1塁側）は固定。
+  // 先攻後攻入替では「どちらが表に攻撃するか」だけを反転する。
+  state.firstBatSide = state.firstBatSide === "home" ? "visitor" : "home";
+
+  save();
+}
+
+function deepCloneForBenchSwap(v) {
+  return v == null ? v : JSON.parse(JSON.stringify(v));
+}
+
+async function swapBenches() {
+  pushHistory();
+
+  // visitor/home は物理的な左右ベンチを表す。
+  // チームそのものの試合内容を維持したまま、左右だけを丸ごと交換する。
+  const oldVisitorScore = state.visitorScore;
+  state.visitorScore = state.homeScore;
+  state.homeScore = oldVisitorScore;
+
+  const oldVisitorName = state.visitorName;
+  state.visitorName = state.homeName;
+  state.homeName = oldVisitorName;
+
+  const swapSideObject = key => {
+    if (!state[key] || typeof state[key] !== "object") return;
+    const oldVisitor = deepCloneForBenchSwap(state[key].visitor);
+    state[key].visitor = deepCloneForBenchSwap(state[key].home);
+    state[key].home = oldVisitor;
+  };
+
+  // 左右のチームに紐づく全データ
+  ["orders", "currentBatter", "pitchCounts", "teamInfo", "playerMasters"].forEach(swapSideObject);
+
+  // ランニングスコアは配列と表示名をまとめて交換
+  if (state.running && typeof state.running === "object") {
+    const rv = deepCloneForBenchSwap(state.running.visitor);
+    state.running.visitor = deepCloneForBenchSwap(state.running.home);
+    state.running.home = rv;
+
+    const rn = state.running.visitorName;
+    state.running.visitorName = state.running.homeName;
+    state.running.homeName = rn;
+  }
+
+  // 同じチームが先攻/後攻のままであるよう、ベンチ側の反転に合わせる。
+  state.firstBatSide = state.firstBatSide === "home" ? "visitor" : "home";
+
+  // 左右を直接保持している一時表示は誤表示防止のため閉じる。
+  state.showOrderSide = "";
+  if (state.playerImage) {
+    state.playerImage = { ...state.playerImage, show:false, side:"", name:"", filename:"", url:"" };
+  }
+
+  // まずスコアボード本体を保存・描画。
+  save();
+
+  // ビジョン側に保持している左右別素材も同時交換。
+  // ここを交換しないと、ベンチ入替直後だけ旧チームの写真/ロゴが出る。
+  try {
+    const snap = await VISION_REF.once("value");
+    const v = snap.val() || {};
+    const updates = {};
+
+    if (v.assets && typeof v.assets === "object") {
+      updates["assets/visitor"] = deepCloneForBenchSwap(v.assets.home || {});
+      updates["assets/home"] = deepCloneForBenchSwap(v.assets.visitor || {});
+    }
+
+    const logos = v.teamLogo || v.teamLogos;
+    if (logos && typeof logos === "object") {
+      updates["teamLogo/visitor"] = deepCloneForBenchSwap(logos.home || null);
+      updates["teamLogo/home"] = deepCloneForBenchSwap(logos.visitor || null);
+    }
+
+    // スタメン発表中の古いsnapshotは左右交換後の状態と不整合になるため待機へ戻す。
+    if ((v.mode || "") === "STARTER") {
+      updates["starter/active"] = false;
+      updates["starter/phase"] = "idle";
+      updates["starter/step"] = -1;
+      updates["starter/side"] = "";
+      updates["starter/index"] = -1;
+      updates["starter/requestId"] = Date.now();
+    }
+
+    if (Object.keys(updates).length) await VISION_REF.update(updates);
+  } catch (e) {
+    console.warn("ビジョン左右素材のベンチ入替に失敗:", e);
+    // scoreboard/state の入替自体は完了しているため、操作を巻き戻さない。
+  }
+
+  // 左右別素材を現在のオーダーから再同期して最終整合を取る。
+  try {
+    await Promise.all([
+      syncVisionAssetsForSide("visitor"),
+      syncVisionAssetsForSide("home")
+    ]);
+  } catch (e) {
+    console.warn("ベンチ入替後の素材再同期に失敗:", e);
+  }
+}
+
+function applyIncoming(data) {
+  if (
+    data &&
+    data.type === "scoreboard-update" &&
+    data.state
+  ) {
+    state = {
+      ...DEFAULT_STATE,
+      ...data.state
+    };
+
+    render();
+  }
+}
+
+window.addEventListener("storage", (e) => {
+  if (e.key === KEY) {
+    state = loadState();
+    render();
+  }
+});
+
+if (channel) {
+  channel.onmessage = (e) => {
+    applyIncoming(e.data);
+  };
+}
+
+render();
+
+function renderRunningScore() {
+  const table = document.getElementById("runningTable");
+  if (!table) return;
+
+  table.innerHTML = "";
+
+  const blank = document.createElement("div");
+  blank.className = "runCell header";
+  blank.textContent = "";
+  table.appendChild(blank);
+
+  for (let i = 1; i <= 12; i++) {
+    const h = document.createElement("div");
+    h.className = "runCell header";
+    h.textContent = i;
+    table.appendChild(h);
+  }
+
+  const totalHeader = document.createElement("div");
+  totalHeader.className = "runCell header";
+  totalHeader.textContent = "計";
+  table.appendChild(totalHeader);
+
+  // ランニングスコアも表示順は「上=先攻、下=後攻」。
+  // データ自体は visitor=3塁側、home=1塁側に固定したまま、表示順だけ切り替える。
+  const firstRunningSide = state.firstBatSide === "home" ? "home" : "visitor";
+  const secondRunningSide = firstRunningSide === "visitor" ? "home" : "visitor";
+  addRunningRow(firstRunningSide);
+  addRunningRow(secondRunningSide);
+}
+
+function addRunningRow(side) {
+  const table = document.getElementById("runningTable");
+
+  const teamCell = document.createElement("div");
+  teamCell.className = "runCell team";
+  teamCell.textContent =
+  side === "visitor"
+    ? (
+        state.teamInfo?.visitor?.fullName ||
+        state.running.visitorName
+      )
+    : (
+        state.teamInfo?.home?.fullName ||
+        state.running.homeName
+      );
+
+fitTeamCellText(teamCell);
+
+table.appendChild(teamCell);
+
+  for (let i = 0; i < 12; i++) {
+    const cell = document.createElement("div");
+    const activeSide = getBattingSide();
+const activeIndex = state.inning - 1;
+
+cell.className = "runCell";
+
+if (side === activeSide && i === activeIndex) {
+  cell.classList.add("activeInning");
+}
+    cell.textContent = state.running[side][i] || "";
+    cell.onclick = () => editRunningScore(side, i);
+    table.appendChild(cell);
+  }
+
+  const totalCell = document.createElement("div");
+  totalCell.className = "runCell total";
+  totalCell.textContent = calcRunningTotal(side);
+  table.appendChild(totalCell);
+}
+function calcRunningTotal(side) {
+  return state.running[side].reduce((sum, value) => {
+    const text = String(value || "");
+
+    const match = text.match(/\d+/);
+
+    if (!match) return sum;
+
+    const n = Number(match[0]);
+
+    return sum + (isNaN(n) ? 0 : n);
+  }, 0);
+}
+
+
+function editRunningScore(side, index) {
+  const current = state.running[side][index] || "";
+  const next = prompt(`${index + 1}回の得点を入力してください`, current);
+  if (next === null) return;
+
+  state.running[side][index] = next.trim();
+  save();
+}
+
+function toggleRunningDisplay() {
+  state.showRunning = !state.showRunning;
+  save();
+}
+
+
+function toggleScoreDisplay() {
+  state.showScore = state.showScore === false ? true : false;
+  save();
+}
+
+function openOrderRegister() {
+
+  const visitor = inputTeamOrder("先攻チーム", "visitor");
+
+  if (visitor === null) return;
+
+  const home = inputTeamOrder("後攻チーム", "home");
+
+  if (home === null) return;
+
+  state.orders = {
+
+    visitor,
+
+    home
+
+  };
+
+  save();
+
+  alert("オーダーを登録しました");
+
+}
+
+function inputTeamOrder(teamLabel, side) {
+
+  const current =
+
+    state.orders?.[side] ||
+
+    Array.from({ length: 10 }, () => ({ position: "", name: "" }));
+
+  const result = [];
+
+  for (let i = 0; i < ORDER_LABELS.length; i++) {
+
+    const orderLabel = ORDER_LABELS[i];
+
+    const position = prompt(
+
+      `${teamLabel} ${orderLabel}番のポジションを入力してください`,
+
+      current[i]?.position || ""
+
+    );
+
+    if (position === null) return null;
+
+    const name = prompt(
+
+      `${teamLabel} ${orderLabel}番の選手名を入力してください`,
+
+      current[i]?.name || ""
+
+    );
+
+    if (name === null) return null;
+
+    result.push({
+
+      order: orderLabel,
+
+      position: position.trim(),
+
+      name: name.trim()
+
+    });
+
+  }
+
+  return result;
+
+}
+
+
+function makeOrderRows(side) {
+  const wrap = document.getElementById(
+    side === "visitor" ? "visitorOrderRows" : "homeOrderRows"
+  );
+
+  if (!wrap) return;
+
+  const current =
+    state.orders?.[side] ||
+    Array.from({ length: 10 }, () => ({ position: "", name: "" }));
+
+  wrap.innerHTML = "";
+
+  ORDER_LABELS.forEach((label, index) => {
+    const row = document.createElement("div");
+    row.className = "orderRow";
+
+    row.innerHTML = `
+      <div class="orderNo">${label}</div>
+
+      <input
+        class="orderInput"
+        id="${side}_pos_${index}"
+        value="${current[index]?.position || ""}">
+
+      <input
+  class="orderInput"
+  id="${side}_name_${index}"
+  lang="ja"
+  inputmode="text"
+  autocomplete="off"
+  value="${current[index]?.name || ""}">
+    `;
+
+    wrap.appendChild(row);
+  });
+}
+
+
+function readOrderRows(side) {
+  return ORDER_LABELS.map((label, index) => {
+    return {
+      order: label,
+      position: document.getElementById(`${side}_pos_${index}`)?.value || "",
+      name: document.getElementById(`${side}_name_${index}`)?.value || ""
+    };
+  });
+}
+
+
+function openOrderChange() {
+  const sideText = prompt(
+    "変更するチームを選択してください\n\n1：先攻\n2：後攻",
+    "1"
+  );
+
+  if (sideText === null) return;
+
+  const side = sideText.trim() === "2" ? "home" : "visitor";
+
+  const orderText = prompt(
+    "変更する打順を選択してください\n\n1〜9 または P",
+    "1"
+  );
+
+  if (orderText === null) return;
+
+  const index = ORDER_LABELS.indexOf(orderText.trim());
+
+  if (index === -1) {
+    alert("打順は 1〜9 または P で入力してください");
+    return;
+  }
+
+  changeSingleOrder(side, index);
+}
+
+function changeSingleOrder(side, index) {
+  if (!state.orders) {
+    state.orders = {
+      visitor: Array.from({ length: 10 }, () => ({ position: "", name: "" })),
+      home: Array.from({ length: 10 }, () => ({ position: "", name: "" }))
+    };
+  }
+
+  const current = state.orders[side][index] || {
+    order: ORDER_LABELS[index],
+    position: "",
+    name: ""
+  };
+
+  const position = prompt("ポジションを入力してください", current.position || "");
+  if (position === null) return;
+
+  const name = prompt("選手名を入力してください", current.name || "");
+  if (name === null) return;
+
+  state.orders[side][index] = {
+    order: ORDER_LABELS[index],
+    position: position.trim(),
+    name: name.trim()
+  };
+
+  save();
+  alert("オーダーを変更しました");
+}
+
+function renderOrderDisplay() {
+  const visitorTitle = document.querySelector(
+    ".orderDisplayBox:first-child .orderDisplayTitle"
+  );
+
+  const homeTitle = document.querySelector(
+    ".orderDisplayBox:last-child .orderDisplayTitle"
+  );
+  if (visitorTitle){
+
+const visitorRole = getPlayerButtonRole("visitor");
+
+visitorTitle.innerHTML=`
+
+<button
+class="orderViewBtn ${state.showOrderSide==="visitor" ? "active" : ""}"
+onclick="toggleOrderOverlay('visitor')">
+オーダー表示
+</button>
+
+<div class="orderTeamNameTitle">
+  <span class="teamTitleText">
+    ${state.teamInfo?.visitor?.fullName || state.running?.visitorName || ""}
+  </span>
+
+  <button
+    class="masterBtn"
+    onclick="openMasterModal('visitor')">
+    マスタ登録
+  </button>
+</div>
+
+<button
+class="playerViewBtn ${state.playerImage?.show && state.playerImage?.side==="visitor" ? "active" : ""}"
+onclick="togglePlayerImage('visitor')">
+${visitorRole.label}
+</button>
+
+<button
+class="bulkChangeBtn"
+onclick="openBulkChange('visitor')">
+一括交代
+</button>
+
+`;
+
+}
+
+if (homeTitle){
+
+const homeRole = getPlayerButtonRole("home");
+
+homeTitle.innerHTML=`
+
+<button
+class="orderViewBtn ${state.showOrderSide==="home" ? "active" : ""}"
+onclick="toggleOrderOverlay('home')">
+オーダー表示
+</button>
+
+<div class="orderTeamNameTitle">
+  <span class="teamTitleText">
+    ${state.teamInfo?.home?.fullName || state.running?.homeName || ""}
+  </span>
+
+  <button
+    class="masterBtn"
+    onclick="openMasterModal('home')">
+    マスタ登録
+  </button>
+</div>
+
+<button
+class="playerViewBtn ${state.playerImage?.show && state.playerImage?.side==="home" ? "active" : ""}"
+onclick="togglePlayerImage('home')">
+${homeRole.label}
+</button>
+
+<button
+class="bulkChangeBtn"
+onclick="openBulkChange('home')">
+一括交代
+</button>
+
+`;
+
+}
+
+  const battingSide = getBattingSide();
+
+  document
+    .getElementById("visitorBatterControl")
+    ?.classList.toggle("hidden", battingSide !== "visitor");
+
+  document
+    .getElementById("homeBatterControl")
+    ?.classList.toggle("hidden", battingSide !== "home");
+
+  const visitorBtn = document.getElementById("visitorBatterShowBtn");
+  const homeBtn = document.getElementById("homeBatterShowBtn");
+
+  [visitorBtn, homeBtn].forEach(btn => {
+    if (!btn) return;
+
+    btn.textContent = state.showBatterInfo ? "非表示" : "表示";
+    btn.classList.toggle("active", !!state.showBatterInfo);
+  });
+
+  renderOrderSide("visitor", "visitorOrderDisplay");
+  renderOrderSide("home", "homeOrderDisplay");
+}
+
+function renderOrderSide(side, targetId) {
+  const box = document.getElementById(targetId);
+  if (!box) return;
+
+  if (!state.orders) {
+    state.orders = {
+      visitor: Array.from({ length: 10 }, (_, i) => ({
+        order: ORDER_LABELS[i],
+        position: "",
+        name: ""
+      })),
+      home: Array.from({ length: 10 }, (_, i) => ({
+        order: ORDER_LABELS[i],
+        position: "",
+        name: ""
+      }))
+    };
+  }
+
+  if (!state.orders[side]) {
+    state.orders[side] = Array.from({ length: 10 }, (_, i) => ({
+      order: ORDER_LABELS[i],
+      position: "",
+      name: ""
+    }));
+  }
+
+  box.innerHTML = "";
+
+  ORDER_LABELS.forEach((label, index) => {
+    const item = state.orders[side][index] || {
+      order: label,
+      position: "",
+      name: ""
+    };
+
+    const row = document.createElement("div");
+    row.className = "orderDisplayRow";
+
+const battingSide = getBattingSide();
+const defenseSide = getDefenseSide();
+
+if (side === battingSide) {
+  const activeIndex = state.currentBatter?.[side] ?? 0;
+
+  if (index === activeIndex) {
+    row.classList.add("activeBatter");
+  }
+}
+
+if (side === defenseSide && label === "P") {
+  row.classList.add("defensePitcher");
+}
+
+    const isVideoPlaying =
+  state.videoPlayback?.show &&
+  state.videoPlayback?.side === side &&
+  state.videoPlayback?.name === item.name;
+
+const isMusicPlaying =
+  state.musicPlayback?.show &&
+  state.musicPlayback?.side === side &&
+  state.musicPlayback?.name === item.name;
+
+row.innerHTML = `
+  <div class="orderDisplayNo">${label}</div>
+
+  <div class="orderDisplayPos">
+    ${item.position || ""}
+  </div>
+
+  <div class="orderDisplayName">
+    ${item.name || ""}
+  </div>
+
+  <button
+    type="button"
+    class="playerVideoBtn ${isVideoPlaying ? "active" : ""}"
+    onclick="playPlayerVideo('${side}', ${index}, event)">
+    動画
+  </button>
+
+  <button
+    type="button"
+    class="playerMusicBtn ${isMusicPlaying ? "active" : ""}"
+    onclick="playPlayerMusic('${side}', ${index}, event)">
+    音楽
+  </button>
+`;
+
+    row.onclick = () => {
+      editOrderFromDisplay(side, index);
+    };
+
+    box.appendChild(row);
+  });
+}
+
+function editOrderFromDisplay(side, index) {
+  openSingleChange(side, index);
+}
+
+let singleEditSide = "";
+let singleEditIndex = 0;
+
+function openSingleChange(side, index) {
+  singleEditSide = side;
+  singleEditIndex = index;
+  openBulkChange(side);
+
+  const title = document.getElementById("bulkTitle");
+  title.textContent =
+    `${side === "visitor" ? "先攻" : "後攻"} ${ORDER_LABELS[index]}番 個別交代`;
+
+  const rows = document.getElementById("bulkRows");
+  const item = state.orders?.[side]?.[index] || {
+    order: ORDER_LABELS[index],
+    position: "",
+    name: ""
+  };
+
+  rows.innerHTML = `
+    <div class="bulkRow">
+      <div class="bulkNo">${ORDER_LABELS[index]}</div>
+      ${makePositionSelectHtml(index, item.position || "")}
+      ${makePlayerSelectHtml(side, index, item.name || "", item.number || "")}
+    </div>
+  `;
+
+  document.querySelector(".bulkSaveBtn").setAttribute("onclick", "saveSingleChange()");
+}
+
+async function saveSingleChange() {
+  pushHistory();
+
+  // closeBulkChange() で singleEditSide が空になるため、先に保存しておく
+  const savedSide = singleEditSide;
+  const select = document.getElementById(`bulk_name_${singleEditIndex}`);
+  const option = select?.selectedOptions?.[0];
+
+  state.orders[savedSide][singleEditIndex] = {
+    order: ORDER_LABELS[singleEditIndex],
+    position: document.getElementById(`bulk_pos_${singleEditIndex}`)?.value || "",
+    number: select?.value || "",
+    name: option?.dataset?.name || ""
+  };
+
+  document.querySelector(".bulkSaveBtn").setAttribute("onclick", "saveBulkChange()");
+
+  closeBulkChange();
+  save();
+
+  // 個別交代を保存したら、そのチームのビジョン用選手素材も自動更新する
+  try {
+    await syncVisionAssetsForSide(savedSide);
+  } catch (e) {
+    console.error("個別交代後の選手素材自動同期に失敗しました", e);
+  }
+}
+
+function moveBatter(side, delta) {
+  if (!state.currentBatter) {
+    state.currentBatter = {
+      visitor: 0,
+      home: 0
+    };
+  }
+
+  let current = Number(state.currentBatter[side] || 0);
+  current += delta;
+
+  if (current < 0) current = 8;
+  if (current > 8) current = 0;
+
+  state.currentBatter[side] = current;
+
+  save();
+}
+
+function toggleBatterInfo() {
+  state.showBatterInfo = !state.showBatterInfo;
+  save();
+}
+
+state.showOrderSide ||= "";
+
+const POSITION_MAP = {
+
+"1":"投",
+"D":"指",
+"2":"捕",
+"3":"一",
+"4":"二",
+"5":"三",
+"6":"遊",
+"7":"左",
+"8":"中",
+"9":"右",
+"P":"投"
+
+};
+
+function convertPos(pos){
+
+return POSITION_MAP[pos] || pos;
+
+}
+
+function toggleOrderOverlay(side){
+
+state.showOrderSide =
+state.showOrderSide===side
+?
+""
+:
+side;
+
+save();
+
+renderOrderOverlay();
+
+}
+
+function getPlayerButtonRole(side) {
+  const battingSide = getBattingSide();
+
+  if (side === battingSide) {
+    return {
+      type: "batter",
+      label: "打者表示"
+    };
+  }
+
+  return {
+    type: "pitcher",
+    label: "投手表示"
+  };
+}
+
+function getCurrentPlayerName(side) {
+  const role = getPlayerButtonRole(side);
+
+  if (role.type === "batter") {
+    const index = Number(state.currentBatter?.[side] || 0);
+    return state.orders?.[side]?.[index]?.name || "";
+  }
+
+  const pitcher = state.orders?.[side]?.find(item => item.order === "P");
+  return pitcher?.name || "";
+}
+
+async function resolveIndividualTelopUrl(side, name) {
+  const info = state.teamInfo?.[side] || {};
+  const teamFolder = String(info.storageFolder || info.folder || info.fullName || info.name || "").trim();
+  if (!teamFolder) throw new Error("チームのStorageフォルダ名が登録されていません");
+  const wanted = `${String(name || "").trim()}.png`;
+  const basePath = `vision/players/${teamFolder}/個別テロップ`;
+  try { return await FIREBASE_STORAGE.ref(`${basePath}/${wanted}`).getDownloadURL(); } catch (e) {}
+  const normalize = v => String(v || "").normalize("NFKC").replace(/[\s　]+/g, "").toLowerCase();
+  const list = await FIREBASE_STORAGE.ref(basePath).listAll();
+  const target = normalize(wanted);
+  const found = list.items.find(item => normalize(item.name) === target);
+  if (!found) throw new Error(`個別テロップが見つかりません：${basePath}/${wanted}`);
+  return await found.getDownloadURL();
+}
+
+// 個別テロップURLは同じ選手なら再利用し、ボタンの色は通信前に更新する。
+const individualTelopUrlCache = new Map();
+let playerImageClickSerial = 0;
+async function togglePlayerImage(side) {
+  const role = getPlayerButtonRole(side);
+  const name = getCurrentPlayerName(side);
+  if (!name) { alert("選手名が登録されていません"); return; }
+  const serial = ++playerImageClickSerial;
+  const previous = { ...(state.playerImage || {}) };
+  if (previous.show && previous.side === side && previous.name === name) {
+    state.playerImage = { ...previous, show:false };
+    save();
+    return;
+  }
+  // 操作直後にボタン色を反映。URL取得の完了を待たない。
+  const key = `${side}|${name}|${state.teamInfo?.[side]?.storageFolder || state.teamInfo?.[side]?.folder || state.teamInfo?.[side]?.fullName || ''}`;
+  state.playerImage = { show:true, type:role.type, side, name, filename:`${name}.png`, url:individualTelopUrlCache.get(key) || "" };
+  // URLがまだない場合は未完成のテロップを送信せず、ボタンだけ先に色を変更。
+  if (state.playerImage.url) { save(); return; }
+  document.querySelectorAll('.playerViewBtn').forEach(btn => {
+    const action = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', action.includes(`togglePlayerImage('${side}')`));
+  });
+  try {
+    const url = await resolveIndividualTelopUrl(side, name);
+    individualTelopUrlCache.set(key, url);
+    if (serial !== playerImageClickSerial) return;
+    state.playerImage = { show:true, type:role.type, side, name, filename:`${name}.png`, url };
+    save();
+  } catch (error) {
+    if (serial !== playerImageClickSerial) return;
+    state.playerImage = previous;
+    renderOrderDisplay();
+    console.error("個別テロップ取得エラー", error);
+    alert(error?.message || "個別テロップ画像を取得できませんでした");
+  }
+}
+
+function renderOrderOverlay(){
+
+return;
+
+}
+
+
+function markMediaPending(type,name){
+  document.querySelectorAll(".mediaPending").forEach(b=>b.classList.remove("mediaPending"));
+  if(type==="event"){
+    document.querySelector(`.eventVideoBtn[data-event-video="${CSS.escape(String(name||""))}"]`)?.classList.add("mediaPending");
+  }
+}
+MEDIA_ACK_REF.on("value",snap=>{
+  const ack=snap.val();
+  if(ack?.status==="playing")document.querySelectorAll(".mediaPending").forEach(b=>b.classList.remove("mediaPending"));
+});
+
+// ===== 低遅延メディアキャッシュ =====
+const mediaUrlCache=new Map();
+const mediaFolderCache=new Map();
+let mediaPrewarmTimer=null;
+
+async function cachedStorageUrl(path){
+  const clean=String(path||"").trim();
+  if(!clean)throw new Error("ファイル名が指定されていません");
+  if(mediaUrlCache.has(clean))return mediaUrlCache.get(clean);
+  const promise=FIREBASE_STORAGE.ref(clean).getDownloadURL().catch(e=>{mediaUrlCache.delete(clean);throw e});
+  mediaUrlCache.set(clean,promise);
+  return promise;
+}
+async function cachedFolderItems(path){
+  const clean=String(path||"").trim();
+  if(mediaFolderCache.has(clean))return mediaFolderCache.get(clean);
+  const promise=FIREBASE_STORAGE.ref(clean).listAll().then(r=>r.items).catch(e=>{mediaFolderCache.delete(clean);throw e});
+  mediaFolderCache.set(clean,promise);
+  return promise;
+}
+function stripMediaExt(name){return String(name||"").replace(/\.[^.]+$/,"").trim()}
+
+/* 選手名のメディア照合専用。
+   表示名やStorage上のファイル名は変更せず、比較時だけ
+   Unicode表記差・全角/半角スペース・改行等の空白差を吸収する。 */
+function normalizeMediaPlayerName(name){
+  return stripMediaExt(name)
+    .normalize("NFKC")
+    .replace(/[\s\u3000\u00A0\u200B-\u200D\uFEFF]+/g,"")
+    .trim();
+}
+
+async function resolveExactMedia(folder,playerName,regex){
+  const items=await cachedFolderItems(folder);
+  const target=normalizeMediaPlayerName(playerName);
+  const item=items.find(ref=>
+    regex.test(ref.name) &&
+    normalizeMediaPlayerName(ref.name)===target
+  );
+  if(!item)return null;
+  const url=await cachedStorageUrl(item.fullPath);
+  return {item,url,filename:item.name,storagePath:item.fullPath};
+}
+async function prewarmControlMedia(){
+  const jobs=[];
+  // 固定イベント動画は起動直後にURLを解決。
+  jobs.push((async()=>{
+    const items=await cachedFolderItems("vision/videos");
+    const wanted=["ナイスピッチング","ナイスバッティング","ナイスラン","ナイスプレイ","ホームラン","ファールボール"];
+    // 固定演出のURLを起動時に解決し、ボタン押下時のStorage検索を省略する。
+    await Promise.allSettled(wanted.map(async name=>{
+      const normalize=value=>String(value||"").normalize("NFKC").trim();
+      const base=normalize(name);
+      const extensions=name==="ファールボール"?["mov"]:["mp4","mov"];
+      let item=null;
+      for(const ext of extensions){
+        item=items.find(x=>normalize(x.name)===normalize(`${name}.${ext}`))
+          ||items.find(x=>normalize(x.name).includes(base)&&x.name.toLowerCase().endsWith(`.${ext}`));
+        if(item)break;
+      }
+      if(item)await cachedStorageUrl(item.fullPath);
+    }));
+  })());
+  // 現在の両チームオーダーは操作前に一覧とURLを解決。
+  for(const side of ["visitor","home"]){
+    const info=state.teamInfo?.[side]||{};
+    const folder=String(info.storageFolder||info.folder||info.fullName||info.name||"").trim();
+    if(!folder)continue;
+    const graphics=`vision/graphics/${folder}`;
+    const batMusic=`vision/music/${folder}/打者`;
+    const pitMusic=`vision/music/${folder}/投手`;
+    jobs.push(cachedFolderItems(graphics),cachedFolderItems(batMusic),cachedFolderItems(pitMusic));
+    for(const p of state.orders?.[side]||[]){
+      if(!p?.name)continue;
+      jobs.push(resolveExactMedia(graphics,p.name,/\.(png|jpe?g|webp|gif|mp4|mov|webm|m4v)$/i).catch(()=>null));
+      const mf=String(p.order||"").toUpperCase()==="P"?pitMusic:batMusic;
+      jobs.push(resolveExactMedia(mf,p.name,/\.(mp3|m4a|aac|wav|ogg|oga|webm)$/i).catch(()=>null));
+    }
+  }
+  await Promise.allSettled(jobs);
+}
+let lastMediaPrewarmKey="";
+function scheduleMediaPrewarm(){
+  const key=JSON.stringify({teamInfo:state.teamInfo,orders:state.orders});
+  if(key===lastMediaPrewarmKey)return;
+  lastMediaPrewarmKey=key;
+  clearTimeout(mediaPrewarmTimer);
+  mediaPrewarmTimer=setTimeout(()=>prewarmControlMedia().catch(e=>console.warn("メディア先読み失敗",e)),150);
+}
+async function getFirebaseStorageUrl(filename) {
+  const cleanFilename=String(filename||"").trim();
+  if(!cleanFilename)throw new Error("ファイル名が指定されていません");
+  try{return await cachedStorageUrl(cleanFilename)}
+  catch(error){
+    console.error("Firebase Storage URL取得エラー",{filename:cleanFilename,error});
+    throw new Error(`Firebase Storageにファイルが見つかりません：${cleanFilename}`);
+  }
+}
+
+async function playPlayerVideo(
+  side,
+  index,
+  event
+) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  // クリックした瞬間に視覚フィードバック（素材解決・通信待ち不要）。
+  if(event?.currentTarget){event.currentTarget.classList.add("mediaPending");}
+
+  /*
+   動画再生中に「動画」ボタンを押した場合は再生停止。
+   PLAYER_VIDEO_REF を削除すると、ビジョン側も即座に動画を閉じる。
+  */
+  // 停止判定はローカル状態ではなくFirebaseを正とする。
+  // 再生指示が存在する状態で動画ボタンを押したら、必ず削除＝停止。
+  // Firebase購読で常時同期しているローカル状態を使い、押下時のonce()往復を省く。
+  if(state.videoPlayback?.show && state.videoPlayback?.requestId){
+    state.videoPlayback={show:false,side:"",name:"",filename:"",storagePath:"",url:"",requestId:0};
+    render();
+    await PLAYER_VIDEO_REF.remove();
+    return;
+  }
+
+  const player =
+    state.orders?.[side]?.[index];
+
+  if (
+    !player ||
+    !player.name
+  ) {
+    alert(
+      "選手名が登録されていません"
+    );
+
+    return;
+  }
+
+  const playerName =
+    String(player.name).trim();
+
+  // 選手の「動画」ボタンは、その選手が所属する現在のチーム名のgraphicsフォルダを参照する。
+  // 例: vision/graphics/富合クラブ/選手名.ext / vision/graphics/宇城パイレーツ/選手名.ext
+  // storageFolder が設定されている場合はそれを優先し、なければチーム正式名をフォルダ名として使う。
+  const teamInfo = state.teamInfo?.[side] || {};
+  const teamFolder = String(
+    teamInfo.storageFolder ||
+    teamInfo.folder ||
+    teamInfo.fullName ||
+    teamInfo.name ||
+    ""
+  ).trim();
+
+  if (!teamFolder) {
+    alert("チーム名が登録されていません");
+    return;
+  }
+
+  const graphicsFolder = `vision/graphics/${teamFolder}`;
+  const requestId = Date.now();
+
+  try {
+    const resolved=await resolveExactMedia(graphicsFolder,playerName,/\.(png|jpe?g|webp|gif|mp4|mov|webm|m4v)$/i);
+    if(!resolved)throw new Error(`${graphicsFolder}/ 内に「${playerName}」と一致する画像・動画が見つかりません`);
+    const {filename,storagePath,url}=resolved;
+    const isImage = /\.(png|jpe?g|webp|gif)$/i.test(filename);
+
+    const playback = {
+      show: true,
+      side,
+      name: playerName,
+      filename,
+      storagePath,
+      url,
+      mediaType: isImage ? "image" : "video",
+      requestId,
+      loop: false,
+      // 選手の動画／画像は自動終了しない。もう一度「動画」ボタンを押した時だけ終了する。
+      holdLastFrame: true
+    };
+
+    /*
+     操作画面のボタン表示用
+    */
+    state.videoPlayback =
+      playback;
+
+    localStorage.setItem(
+      KEY,
+      JSON.stringify(state)
+    );
+
+    render();
+
+    /*
+     Storageの再生URLを含めて
+     Realtime Databaseへ送信
+    */
+    await PLAYER_VIDEO_REF.set(
+      playback
+    );
+
+  } catch (error) {
+    console.error(
+      "動画再生指示の送信に失敗しました",
+      error
+    );
+
+    state.videoPlayback = {
+      show: false,
+      side: "",
+      name: "",
+      filename: "",
+      storagePath: "",
+      url: "",
+      requestId: 0
+    };
+
+    localStorage.setItem(
+      KEY,
+      JSON.stringify(state)
+    );
+
+    render();
+
+    alert(
+      error?.message ||
+       "動画をFirebase Storageから取得できませんでした"
+
+    );
+
+  }
+
+}
+
+async function playPlayerMusic(
+  side,
+  index,
+  event
+) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  // クリックした瞬間に視覚フィードバック（素材解決・通信待ち不要）。
+  if(event?.currentTarget){event.currentTarget.classList.add("mediaPending");}
+
+  /* DBの実際の再生状態を確認してトグルする。localStorageの古い状態には依存しない */
+  // Firebase購読済み状態で停止判定し、押下時のonce()を省く。
+  if(state.musicPlayback?.show && state.musicPlayback?.requestId){
+    await PLAYER_MUSIC_REF.update({fadeOut:true,fadeDuration:1000,fadeRequestId:Date.now()});
+    return;
+  }
+
+  const player = state.orders?.[side]?.[index];
+  if (!player || !player.name) {
+    alert("選手名が登録されていません");
+    return;
+  }
+
+  const playerName = String(player.name).trim();
+
+  // 音楽は現在のチーム名とオーダー種別からStorageフォルダを決定する。
+  // P行 → vision/music/<チーム名>/投手/<選手名>.<拡張子>
+  // 1〜9番 → vision/music/<チーム名>/打者/<選手名>.<拡張子>
+  // ファイル名は拡張子を除き、表記・空白を正規化した選手名と一致するものを採用する。
+  const teamInfo = state.teamInfo?.[side] || {};
+  const teamFolder = String(
+    teamInfo.storageFolder ||
+    teamInfo.folder ||
+    teamInfo.fullName ||
+    teamInfo.name ||
+    ""
+  ).trim();
+
+  if (!teamFolder) {
+    alert("チーム名が登録されていません");
+    return;
+  }
+
+  const orderLabel = String(player.order || "").trim().toUpperCase();
+  const musicRoleFolder = orderLabel === "P" ? "投手" : "打者";
+  const musicFolder = `vision/music/${teamFolder}/${musicRoleFolder}`;
+  const requestId = Date.now();
+
+  try {
+    const resolved=await resolveExactMedia(musicFolder,playerName,/\.(mp3|m4a|aac|wav|ogg|oga|webm)$/i);
+    if(!resolved)throw new Error(`${musicFolder}/ 内に「${playerName}」と一致する音楽データが見つかりません`);
+    const {filename,storagePath,url}=resolved;
+    const playback = {
+      show: true,
+      side,
+      name: playerName,
+      filename,
+      storagePath,
+      url,
+      requestId,
+      fadeOut: false,
+      fadeDuration: 1000
+    };
+
+    state.musicPlayback = playback;
+    localStorage.setItem(KEY, JSON.stringify(state));
+    render();
+
+    await PLAYER_MUSIC_REF.set(playback);
+  } catch (error) {
+    console.error("音楽再生指示の送信に失敗しました", error);
+    state.musicPlayback = {
+      show: false, side: "", name: "", filename: "",
+      storagePath: "", url: "", requestId: 0
+    };
+    localStorage.setItem(KEY, JSON.stringify(state));
+    render();
+    alert(error?.message || "音楽をFirebase Storageから取得できませんでした");
+  }
+}
+
+function updateEventVideoButtonState() {
+  const active = state.videoPlayback?.show && state.videoPlayback?.side === "event"
+    ? String(state.videoPlayback?.name || "") : "";
+  document.querySelectorAll(".eventVideoBtn[data-event-video]").forEach(btn => {
+    const on = btn.dataset.eventVideo === active;
+    btn.classList.toggle("eventVideoActive", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
+
+async function playNamedEventVideo(baseName) {
+  markMediaPending("event",baseName);
+  try {
+    const current=state.videoPlayback;
+    if(current?.show && current?.side==="event" && String(current?.name||"")===String(baseName)){
+      state.videoPlayback={show:false,side:"",name:"",filename:"",storagePath:"",url:"",requestId:0};
+      render();updateEventVideoButtonState();
+      await PLAYER_VIDEO_REF.remove();return;
+    }
+    const items=await cachedFolderItems("vision/videos");
+    const result={items};
+    const normalizeName = value => String(value || "").normalize("NFKC").trim();
+    // イベント動画はChromeで安定再生できるMP4を最優先。
+    // MP4が無い場合のみ従来のMOVをフォールバックとして使用する。
+    const base = normalizeName(baseName);
+    const findExact = ext => {
+      const wanted = normalizeName(`${baseName}.${ext}`);
+      return result.items.find(ref => normalizeName(ref.name) === wanted);
+    };
+    const findContains = ext => result.items.find(ref => {
+      const n = normalizeName(ref.name);
+      return n.includes(base) && n.toLowerCase().endsWith(`.${ext}`);
+    });
+    let item = findExact("mp4") || findContains("mp4") || findExact("mov") || findContains("mov");
+    if (!item) throw new Error(`vision/videos 内に「${baseName}」のMP4/MOV動画が見つかりません`);
+    await playEventVideo(item.fullPath, baseName, 0, false, true);
+  } catch (error) {
+    console.error(`${baseName}動画の検索に失敗しました`, error);
+    alert(error?.message || `${baseName}動画を取得できませんでした`);
+  }
+}
+
+async function playFoulVideo() {
+  try {
+    // Storage上の実ファイル名を取得してから再生する。
+    // 日本語ファイル名のUnicode差・前後空白などがあっても一致できるようにする。
+    const result = {items:await cachedFolderItems("vision/videos")};
+
+    const normalizeName = value =>
+      String(value || "").normalize("NFKC").trim();
+
+    const wanted = normalizeName("ファールボール.mov");
+    let item = result.items.find(ref => normalizeName(ref.name) === wanted);
+
+    // 完全一致しない場合は「ファールボール」を含むmovを探す。
+    if (!item) {
+      item = result.items.find(ref => {
+        const n = normalizeName(ref.name);
+        return n.includes("ファールボール") && n.toLowerCase().endsWith(".mov");
+      });
+    }
+
+    if (!item) {
+      throw new Error("vision/videos 内にファールボール動画が見つかりません");
+    }
+
+    await playEventVideo(
+      item.fullPath,
+      "ファールボール",
+      8000
+    );
+  } catch (error) {
+    console.error("ファールボール動画の検索に失敗しました", error);
+    alert(error?.message || "ファールボール動画を取得できませんでした");
+  }
+}
+
+async function playEventVideo(
+  filename,
+  name,
+  autoStopMs = 0,
+  loop = false,
+  holdLastFrame = false
+) {
+  const cleanFilename =
+    String(filename || "").trim();
+
+  if (!cleanFilename) {
+    return;
+  }
+
+  const requestId =
+    Date.now();
+
+  try {
+    const url =
+      await getFirebaseStorageUrl(
+        cleanFilename
+      );
+
+    const playback = {
+      show: true,
+      side: "event",
+      name: String(name || ""),
+      filename: cleanFilename,
+      storagePath: cleanFilename,
+      url,
+      requestId,
+      loop: !!loop,
+      holdLastFrame: !!holdLastFrame
+    };
+
+    state.videoPlayback =
+      playback;
+
+    localStorage.setItem(
+      KEY,
+      JSON.stringify(state)
+    );
+
+    render();
+
+    await PLAYER_VIDEO_REF.set(
+      playback
+    );
+
+    // 指定されたイベント動画だけ自動停止する。
+    // requestId を確認するため、途中で別の動画に切り替わった場合は止めない。
+    if (autoStopMs > 0) {
+      setTimeout(async () => {
+        try {
+          const snapshot = await PLAYER_VIDEO_REF.once("value");
+          const current = snapshot.val();
+          if (current && current.requestId === requestId) {
+            await PLAYER_VIDEO_REF.remove();
+          }
+        } catch (error) {
+          console.error("イベント動画の自動停止に失敗しました", error);
+        }
+      }, autoStopMs);
+    }
+
+  } catch (error) {
+    console.error(
+      "イベント動画の取得に失敗しました",
+      error
+    );
+
+    alert(
+      error?.message ||
+      "イベント動画をFirebase Storageから取得できませんでした"
+    );
+  }
+}
+
+function undoState() {
+  if (undoStack.length === 0) return;
+
+  redoStack.push(JSON.parse(JSON.stringify(state)));
+
+  state = undoStack.pop();
+
+  isHistoryMoving = true;
+  save();
+  isHistoryMoving = false;
+}
+
+function redoState() {
+  if (redoStack.length === 0) return;
+
+  undoStack.push(JSON.parse(JSON.stringify(state)));
+
+  state = redoStack.pop();
+
+  isHistoryMoving = true;
+  save();
+  isHistoryMoving = false;
+}
+
+setTimeout(scheduleMediaPrewarm,150);
+
+document.addEventListener("keydown", function(e) {
+  if (
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA"
+  ) {
+    return;
+  }
+
+  const key = e.key.toLowerCase();
+
+if (key === "z") {
+  e.preventDefault();
+  undoState();
+}
+
+if (key === "x") {
+  e.preventDefault();
+  redoState();
+}
+
+if (key === "1") {
+  e.preventDefault();
+  toggleBase("first");
+}
+
+if (key === "2") {
+  e.preventDefault();
+  toggleBase("second");
+}
+
+if (key === "3") {
+  e.preventDefault();
+  toggleBase("third");
+}
+
+  if (e.shiftKey && key === "h") {
+    e.preventDefault();
+    playHR();
+    return;
+  }
+
+  if (key === "s") {
+    e.preventDefault();
+    playStrike();
+  }
+
+  if (key === "b") {
+    e.preventDefault();
+    playBall();
+  }
+
+  if (key === "o") {
+    e.preventDefault();
+    playOut();
+  }
+
+  if (key === "r") {
+    e.preventDefault();
+    playRunnerOut();
+  }
+
+  if (key === "h") {
+    e.preventDefault();
+    playHit();
+  }
+});
+
+function playSacBunt() {
+if (Number(state.outs || 0) >= 2) return;
+  if (!hasRunner()) return;
+
+  pushHistory();
+  addPitchCount(1);
+
+  const side = getBattingSide();
+
+  if (state.bases.third) addRuns(1);
+
+  const first = !!state.bases.first;
+  const second = !!state.bases.second;
+
+  state.bases.third = second;
+  state.bases.second = first;
+  state.bases.first = false;
+
+  resetBSOnly();
+  advanceBatter(side);
+  addOut();
+
+  if (state.outs < 3) save();
+}
+
+function playSacFly() {
+if (Number(state.outs || 0) >= 2) return;
+  if (!state.bases.third) return;
+
+  pushHistory();
+  addPitchCount(1);
+
+  const side = getBattingSide();
+
+  addRuns(1);
+  state.bases.third = false;
+
+  resetBSOnly();
+  advanceBatter(side);
+  addOut();
+
+  if (state.outs < 3) save();
+}
+
+function playSteal() {
+  pushHistory();
+
+  if (state.bases.third) {
+    addRuns(1);
+    state.bases.third = false;
+  }
+
+  if (state.bases.second) {
+    state.bases.third = true;
+    state.bases.second = false;
+  }
+
+  if (state.bases.first) {
+    state.bases.second = true;
+    state.bases.first = false;
+  }
+
+  save();
+}
+
+function playDouble() {
+  pushHistory();
+  addPitchCount(1);
+
+  const side = getBattingSide();
+
+  if (state.bases.third) addRuns(1);
+  if (state.bases.second) addRuns(1);
+
+  const first = !!state.bases.first;
+
+  state.bases.third = first;
+  state.bases.second = true;
+  state.bases.first = false;
+
+  recordBatterStat(side,{atBat:1,hit:1});
+  resetBSOnly();
+  advanceBatter(side);
+  save();
+}
+
+function playTriple() {
+  pushHistory();
+  addPitchCount(1);
+
+  const side = getBattingSide();
+
+  let runs = 0;
+  if (state.bases.first) runs++;
+  if (state.bases.second) runs++;
+  if (state.bases.third) runs++;
+
+  if (runs > 0) addRuns(runs);
+
+  state.bases.first = false;
+  state.bases.second = false;
+  state.bases.third = true;
+
+  recordBatterStat(side,{atBat:1,hit:1});
+  resetBSOnly();
+  advanceBatter(side);
+  save();
+}
+
+function playDoublePlay() {
+  pushHistory();
+  addPitchCount(1);
+
+  const side = getBattingSide();
+
+  const first = !!state.bases.first;
+  const second = !!state.bases.second;
+  const third = !!state.bases.third;
+
+  recordBatterStat(side,{atBat:1});
+  resetBSOnly();
+  advanceBatter(side);
+
+  // ランナーが1人だけの場合
+  // そのランナーと打者走者がアウト
+  if (
+    (first && !second && !third) ||
+    (!first && second && !third) ||
+    (!first && !second && third)
+  ) {
+    state.bases = {
+      first: false,
+      second: false,
+      third: false
+    };
+  }
+
+  // 一・二塁
+  else if (first && second && !third) {
+    // 二塁走者は三塁へ残り、
+    // 一塁走者と打者走者がアウト
+    state.bases = {
+      first: false,
+      second: false,
+      third: true
+    };
+  }
+
+  // 一・三塁
+  else if (first && !second && third) {
+    // 三塁走者は残り、
+    // 一塁走者と打者走者がアウト
+    state.bases = {
+      first: false,
+      second: false,
+      third: true
+    };
+  }
+
+  // 二・三塁
+  else if (!first && second && third) {
+    // 三塁走者と打者走者がアウト、
+    // 二塁走者は二塁に残る
+    state.bases = {
+      first: false,
+      second: true,
+      third: false
+    };
+  }
+
+  // 満塁
+  else if (first && second && third) {
+    // 三塁走者と打者走者がアウト、
+    // 一・二塁走者はそのまま残る
+    state.bases = {
+      first: true,
+      second: true,
+      third: false
+    };
+  }
+
+  // ランナーなしの場合
+  else {
+    state.bases = {
+      first: false,
+      second: false,
+      third: false
+    };
+  }
+
+  state.outs = Number(state.outs || 0) + 2;
+
+  if (state.outs >= 3) {
+    endHalfInning(false);
+  } else {
+    save();
+  }
+}
+
+function playErrorReach() {
+  pushHistory();
+  addPitchCount(1);
+
+  const side = getBattingSide();
+
+  const first = !!state.bases.first;
+  const second = !!state.bases.second;
+  const third = !!state.bases.third;
+
+  if (third) {
+    addRuns(1);
+  }
+
+  state.bases.third = second;
+  state.bases.second = first;
+  state.bases.first = true;
+
+  recordBatterStat(side,{atBat:1});
+  resetBSOnly();
+  advanceBatter(side);
+
+  save();
+}
+
+let bulkEditSide = "";
+let bulkPreviewCommitted=false;
+let bulkPreviewCommitPromise=null;
+const bulkPreviewAssetCache={visitor:new Map(),home:new Map()};
+let bulkPreviewWarmPromise={visitor:null,home:null};
+
+function bulkPreviewAssetKey(item){
+  return `${String(item?.number||"")}::${String(item?.name||"").trim()}::${String(item?.position||"")}`;
+}
+
+function setBulkPreviewUi(status){
+  const btn=document.querySelector(".bulkSheetPreviewBtn");
+  const note=document.querySelector(".bulkPreviewNote");
+  if(!btn||!note)return;
+  btn.classList.remove("loading","shown");
+  note.classList.remove("loading","ready");
+  if(status==="loading"){
+    btn.classList.add("loading");
+    btn.textContent="表示準備中…";
+    btn.disabled=true;
+    note.classList.add("loading");
+    note.textContent="ビジョン表示を準備しています…";
+  }else if(status==="shown"){
+    btn.classList.add("shown");
+    btn.textContent="シート表示中";
+    btn.disabled=false;
+    note.classList.add("ready");
+    note.textContent="ビジョンにシートを表示しました。変更箇所は色付きです。";
+  }else{
+    btn.textContent="シート表示";
+    btn.disabled=false;
+    note.textContent="変更中のオーダーをプレビューします。変更箇所は色付きで表示されます。";
+  }
+}
+
+async function warmBulkPreviewSide(side){
+  if(!side)return;
+  if(bulkPreviewWarmPromise[side])return bulkPreviewWarmPromise[side];
+  bulkPreviewWarmPromise[side]=(async()=>{
+    await loadVisionAssetCatalog(side);
+    const team=visionTeamName(side);
+    const teamFolder=visionStorageCatalog[side]?.teamFolder||team;
+    const masters=(state.playerMasters?.[side]||[]).filter(m=>String(m?.name||"").trim());
+
+    // モーダルを開いている間に全登録選手の「名前画像URL」だけ先に解決する。
+    // シート紹介では写真・ポジション画像は使わないため、ここでは取得しない。
+    await Promise.all(masters.map(async master=>{
+      const item={number:master.number||"",name:master.name||"",position:""};
+      const key=bulkPreviewAssetKey(item);
+      if(bulkPreviewAssetCache[side].has(key))return;
+      const nameFile=master.nameFile||visionSuggestFile(master.name,visionStorageCatalog[side]?.names||[],"name");
+      const nameUrl=nameFile?await visionDownloadUrl(`vision/players/${teamFolder}/names/${nameFile}`):"";
+      const asset={
+        team,teamFolder,name:master.name||"",number:master.number||"",
+        nameImage:nameUrl?{url:nameUrl,filename:nameFile,storagePath:`vision/players/${teamFolder}/names/${nameFile}`} : null
+      };
+      bulkPreviewAssetCache[side].set(key,asset);
+      // ブラウザキャッシュにも画像本体を先読みする。
+      if(nameUrl){
+        const img=new Image();
+        img.decoding="async";
+        img.src=nameUrl;
+      }
+    }));
+  })().finally(()=>{bulkPreviewWarmPromise[side]=null;});
+  return bulkPreviewWarmPromise[side];
+}
+
+
+function openBulkChange(side) {
+  bulkEditSide = side;
+  bulkPreviewCommitted=false;
+  bulkPreviewCommitPromise=null;
+  ensurePlayerMasters();
+
+  const modal = document.getElementById("bulkModal");
+  const title = document.getElementById("bulkTitle");
+  const rows = document.getElementById("bulkRows");
+
+  title.textContent =
+    side === "visitor"
+      ? "先攻 一括交代"
+      : "後攻 一括交代";
+
+  rows.innerHTML = "";
+
+  ORDER_LABELS.forEach((label, index) => {
+    const item = state.orders?.[side]?.[index] || {
+      order: label,
+      position: "",
+      name: ""
+    };
+
+    const row = document.createElement("div");
+    row.className = "bulkRow";
+
+    row.innerHTML = `
+  <div class="bulkNo">${label}</div>
+
+  ${makePositionSelectHtml(index, item.position || "")}
+
+  ${makePlayerSelectHtml(side, index, item.name || "", item.number || "")}
+`;
+
+    rows.appendChild(row);
+  });
+
+  modal.classList.add("show");
+  setBulkPreviewUi("idle");
+
+  // ユーザーが交代内容を入力している時間を利用して先読みする。
+  warmBulkPreviewSide(side).catch(e=>console.warn("一括交代プレビュー素材の先読み失敗",e));
+}
+
+
+function getBulkModalOrders(){
+  if(!bulkEditSide)return [];
+  return ORDER_LABELS.map((label,index)=>{
+    const select=document.getElementById(`bulk_name_${index}`);
+    const option=select?.selectedOptions?.[0];
+    const selectedPosition=document.getElementById(`bulk_pos_${index}`)?.value.trim()||"";
+    return {
+      order:label,
+      position:selectedPosition,
+      sheetPosition:selectedPosition,
+      number:select?.value||"",
+      name:option?.dataset?.name||""
+    };
+  });
+}
+
+
+async function buildBulkPreviewAssets(side,previewOrders){
+  // モーダル表示時の先読みがまだ終わっていれば待つ。通常は既に完了済み。
+  if(bulkPreviewWarmPromise[side])await bulkPreviewWarmPromise[side];
+
+  const team=visionTeamName(side);
+  const teamFolder=visionStorageCatalog[side]?.teamFolder||team;
+  const masters=state.playerMasters?.[side]||[];
+  const out={};
+
+  // キャッシュに無い選手だけを追加取得。全選手を毎回Storageへ問い合わせない。
+  const missing=[];
+  for(const item of previewOrders){
+    if(!item?.name||!item?.order)continue;
+    const baseKey=`${String(item?.number||"")}::${String(item?.name||"").trim()}::`;
+    let asset=bulkPreviewAssetCache[side].get(baseKey);
+    if(!asset)missing.push(item);
+  }
+
+  if(missing.length){
+    await loadVisionAssetCatalog(side);
+    await Promise.all(missing.map(async item=>{
+      const master=masters.find(m=>
+        (item.number&&String(m.number||"")===String(item.number))||
+        String(m.name||"").trim()===String(item.name||"").trim()
+      )||{};
+      const nameFile=master.nameFile||visionSuggestFile(item.name,visionStorageCatalog[side]?.names||[],"name");
+      const nameUrl=nameFile?await visionDownloadUrl(`vision/players/${teamFolder}/names/${nameFile}`):"";
+      const baseKey=`${String(item?.number||"")}::${String(item?.name||"").trim()}::`;
+      bulkPreviewAssetCache[side].set(baseKey,{
+        team,teamFolder,name:item.name,number:item.number||"",
+        nameImage:nameUrl?{url:nameUrl,filename:nameFile,storagePath:`vision/players/${teamFolder}/names/${nameFile}`} : null
+      });
+      if(nameUrl){const img=new Image();img.decoding="async";img.src=nameUrl;}
+    }));
+  }
+
+  for(const item of previewOrders){
+    if(!item?.name||!item?.order)continue;
+    const baseKey=`${String(item?.number||"")}::${String(item?.name||"").trim()}::`;
+    const base=bulkPreviewAssetCache[side].get(baseKey)||{};
+    const asset={...base,order:item.order||"",positionCode:item.position||""};
+    out[`order:${String(item.order)}`]=asset;
+    if(item.number)out[String(item.number)]=asset;
+    if(item.name)out[String(item.name).trim()]=asset;
+  }
+  return out;
+}
+
+function commitBulkPreviewInBackground(side,previewOrders){
+  const committedOrders=previewOrders.map(p=>({order:p.order,position:p.position,number:p.number,name:p.name}));
+  state.orders[side]=JSON.parse(JSON.stringify(committedOrders));
+  save();
+  bulkPreviewCommitted=true;
+  bulkPreviewCommitPromise=(async()=>{
+    try{ await syncVisionAssetsForSide(side); }
+    catch(e){ console.error("シート表示中の選手素材先行同期に失敗しました",e); }
+  })();
+  return bulkPreviewCommitPromise;
+}
+
+async function showBulkSheetPreview(){
+  if(!bulkEditSide)return;
+
+  // 押した瞬間に操作盤へフィードバック。通信完了を待ってから色を変えない。
+  setBulkPreviewUi("loading");
+
+  const side=bulkEditSide;
+  const previewOrders=getBulkModalOrders();
+  const previousOrders=JSON.parse(JSON.stringify(state?.orders?.[side]||[]));
+
+  // 打順ごとに「直前の実オーダー」と比較。選手名または守備位置が違う行を変更扱いにする。
+  const changedOrders={};
+  previewOrders.forEach((p,index)=>{
+    const before=previousOrders[index]||{};
+    const changed=
+      String(p?.name||"").trim()!==String(before?.name||"").trim() ||
+      String(p?.position||"").trim()!==String(before?.position||"").trim();
+    if(changed)changedOrders[String(p?.order||ORDER_LABELS[index])]=true;
+  });
+
+  const teamInfo=JSON.parse(JSON.stringify(state?.teamInfo?.[side]||{}));
+  const folder=String(teamInfo.storageFolder||teamInfo.folder||teamInfo.fullName||teamInfo.name||"").trim();
+  if(!folder){alert("選択チームのStorageフォルダ名が登録されていません。");return;}
+
+  const first=state?.firstBatSide==="home"?"home":"visitor";
+  const batting=side===first?"first":"second";
+  const bench=side==="home"?"1塁側":"3塁側";
+
+  try{
+    // 正式保存前なので visionState.assets は旧オーダーのまま。
+    // モーダルで現在選択中の選手からプレビュー専用素材をその場で作る。
+    const previewAssets=await buildBulkPreviewAssets(side,previewOrders);
+
+    await VISION_REF.update({
+      mode:"SHEET_INTRO",
+      sheetIntro:{
+        active:true,
+        side,
+        batting,
+        bench,
+        preview:true,
+        highlightChanges:true,
+        changedOrders,
+        backgroundFile:`シート紹介背景${bench}.png`,
+        teamFolder:folder,
+        orders:previewOrders,
+        assets:previewAssets,
+        requestId:Date.now()
+      },
+      "starter/active":false
+    });
+    setBulkPreviewUi("shown");
+    // シート表示中に正式オーダーへ反映。素材同期も裏で開始し、ここでは待たない。
+    commitBulkPreviewInBackground(side,previewOrders);
+  }catch(e){
+    setBulkPreviewUi("idle");
+    console.error("一括交代シートプレビュー表示失敗",e);
+    alert("シート表示に失敗しました。");
+  }
+}
+
+
+async function commitBulkAndReturnGame(){
+  if(!bulkEditSide)return;
+  const side=bulkEditSide;
+  const committedOrders=getBulkModalOrders();
+
+  if(!bulkPreviewCommitted){
+    pushHistory();
+    commitBulkPreviewInBackground(side,committedOrders);
+  }
+
+  const btn=document.getElementById("bulkReturnGameBtn");
+  if(btn){btn.disabled=true;btn.textContent="切替中…";btn.classList.add("switching");}
+
+  try{
+    // 素材同期は待たず、表示モードだけ即切替。
+    await VISION_REF.update({
+      mode:"GAME",
+      "sheetIntro/active":false,
+      "sheetIntro/preview":false,
+      "sheetIntro/highlightChanges":false,
+      "starter/active":false
+    });
+    closeBulkChange();
+  }catch(e){
+    console.error("通常表示への復帰に失敗しました",e);
+    if(btn){btn.disabled=false;btn.textContent="通常表示へ";btn.classList.remove("switching");}
+    alert("通常表示への復帰に失敗しました。");
+  }
+}
+
+function closeBulkChange() {
+  document.getElementById("bulkModal").classList.remove("show");
+  bulkEditSide = "";
+  singleEditSide = "";
+  document.querySelector(".bulkSaveBtn").setAttribute("onclick", "saveBulkChange()");
+}
+
+async function saveBulkChange() {
+  if (!bulkEditSide) return;
+
+  pushHistory();
+
+  // closeBulkChange() で bulkEditSide が空になるため、先に保存しておく
+  const savedSide = bulkEditSide;
+  state.orders[savedSide] = ORDER_LABELS.map((label, index) => {
+    const select = document.getElementById(`bulk_name_${index}`);
+    const option = select?.selectedOptions?.[0];
+
+    return {
+      order: label,
+      position: document.getElementById(`bulk_pos_${index}`)?.value.trim() || "",
+      number: select?.value || "",
+      name: option?.dataset?.name || ""
+    };
+  });
+
+  closeBulkChange();
+  save();
+
+  // 一括交代でも同様に、そのチームのビジョン用選手素材を自動更新する
+  try {
+    await syncVisionAssetsForSide(savedSide);
+  } catch (e) {
+    console.error("一括交代後の選手素材自動同期に失敗しました", e);
+  }
+}
+
+let masterEditSide = "";
+let masterLoadedTeamName = "";
+
+function ensurePlayerMasters() {
+  if (!state.playerMasters) {
+    state.playerMasters = {
+      visitor: [],
+      home: []
+    };
+  }
+
+  ["visitor", "home"].forEach(side => {
+    if (!Array.isArray(state.playerMasters[side])) {
+      state.playerMasters[side] = [];
+    }
+    state.playerMasters[side].forEach(player=>{
+      player.atBats=Math.max(0,Number(player.atBats||0)||0);
+      player.hits=Math.max(0,Number(player.hits||0)||0);
+      player.homeRuns=Math.max(0,Number(player.homeRuns||0)||0);
+    });
+  });
+}
+
+function makePlayerSelectHtml(side, index, currentName, currentNumber = "") {
+  ensurePlayerMasters();
+
+  const sortedPlayers =
+    [...state.playerMasters[side]]
+      .filter(player => player.name && player.name.trim() !== "")
+      .sort((a, b) => {
+        const an = Number(a.number);
+        const bn = Number(b.number);
+
+        if (!isNaN(an) && !isNaN(bn)) return an - bn;
+        if (!isNaN(an)) return -1;
+        if (!isNaN(bn)) return 1;
+
+        return String(a.number || "").localeCompare(String(b.number || ""), "ja");
+      });
+
+  let html = `
+    <select class="bulkSelect" id="bulk_name_${index}">
+      <option value="">選択してください</option>
+  `;
+
+  sortedPlayers.forEach(player => {
+    const name = player.name || "";
+    const number = player.number || "";
+    const selected =
+      number === currentNumber || name === currentName ? "selected" : "";
+
+    html += `
+      <option value="${number}" data-name="${name}" ${selected}>
+        ${number ? number + "　" : ""}${name}
+      </option>
+    `;
+  });
+
+  html += `</select>`;
+  return html;
+}
+function visionTeamName(side){
+  return String(state.teamInfo?.[side]?.fullName || "").trim();
+}
+function visionNormalizeName(v){
+  return String(v||"").replace(/[\s・･.．]/g,"").toLowerCase();
+}
+function visionFileBase(v){
+  return String(v||"").replace(/\.[^.]+$/,"");
+}
+function visionSuggestFile(playerName, files, kind){
+  const n=visionNormalizeName(playerName);
+  if(!n) return "";
+  let best="",score=-1;
+  for(const f of files||[]){
+    const b=visionNormalizeName(visionFileBase(f));
+    let sc=-1;
+    if(b===n) sc=100;
+    else if(n.includes(b) || b.includes(n)) sc=kind==="name"?80:70;
+    else {
+      const parts=String(playerName||"").split(/[\s　・･]+/).filter(Boolean).map(visionNormalizeName);
+      if(parts.some(x=>x && (b===x || b.includes(x) || x.includes(b)))) sc=60;
+    }
+    if(sc>score){score=sc;best=f;}
+  }
+  return score>=60?best:"";
+}
+function visionAssetOptions(files,current,suggested){
+  const chosen=current||suggested||"";
+  let h='<option value="">未設定</option>';
+  for(const f of files||[]){
+    const esc=String(f).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+    h+=`<option value="${esc}" ${f===chosen?'selected':''}>${esc}</option>`;
+  }
+  return h;
+}
+async function resolveVisionTeamFolder(side){
+  const team=visionTeamName(side);
+  if(!team) return "";
+  try{
+    const root=await FIREBASE_STORAGE.ref("vision/players").listAll();
+    const folders=root.prefixes.map(x=>x.name);
+    if(!folders.length) return team;
+    if(folders.includes(team)) return team;
+    const n=visionNormalizeName(team);
+    let hit=folders.find(f=>{
+      const fn=visionNormalizeName(f);
+      return fn===n || fn.includes(n) || n.includes(fn);
+    });
+    if(hit) return hit;
+    const shortName=String(state.teamInfo?.[side]?.shortName||"").trim();
+    if(shortName){
+      const sn=visionNormalizeName(shortName);
+      hit=folders.find(f=>visionNormalizeName(f).includes(sn));
+      if(hit) return hit;
+    }
+    console.warn("該当するStorageチームフォルダが見つかりません",team,folders);
+    return team;
+  }catch(e){
+    console.warn("チームフォルダ一覧取得失敗",e);
+    return team;
+  }
+}
+async function loadVisionAssetCatalog(side){
+  const team=visionTeamName(side);
+  if(!team){ visionStorageCatalog[side]={photos:[],names:[],teamFolder:""}; return; }
+  const teamFolder=await resolveVisionTeamFolder(side);
+  async function list(path){
+    try{
+      const r=await FIREBASE_STORAGE.ref(path).listAll();
+      return r.items.map(x=>x.name).sort((a,b)=>a.localeCompare(b,'ja'));
+    }catch(e){ console.warn('素材一覧取得失敗',path,e); return []; }
+  }
+  const [photos,names]=await Promise.all([
+    list(`vision/players/${teamFolder}/photos`),
+    list(`vision/players/${teamFolder}/names`)
+  ]);
+  visionStorageCatalog[side]={photos,names,teamFolder};
+}
+async function visionDownloadUrl(path){
+  try{return await FIREBASE_STORAGE.ref(path).getDownloadURL();}catch(e){console.warn('素材URL取得失敗',path,e);return "";}
+}
+async function syncVisionAssetsForSide(side){
+  const team=visionTeamName(side);
+  if(!team) return;
+  await loadVisionAssetCatalog(side);
+  const teamFolder=visionStorageCatalog[side]?.teamFolder || team;
+  const masters=state.playerMasters?.[side]||[];
+  const orders=state.orders?.[side]||[];
+  const out={};
+  for(const item of orders){
+    if(!item?.name) continue;
+    const master=masters.find(m=>(item.number && String(m.number)===String(item.number)) || m.name===item.name) || {};
+    const photoFile=master.photoFile || visionSuggestFile(item.name,visionStorageCatalog[side].photos,'photo');
+    const nameFile=master.nameFile || visionSuggestFile(item.name,visionStorageCatalog[side].names,'name');
+    const [playerUrl,nameUrl,posUrl]=await Promise.all([
+      photoFile?visionDownloadUrl(`vision/players/${teamFolder}/photos/${photoFile}`):Promise.resolve(""),
+      nameFile?visionDownloadUrl(`vision/players/${teamFolder}/names/${nameFile}`):Promise.resolve(""),
+      item.position?visionDownloadUrl(`vision/positions/${item.position}.png`):Promise.resolve("")
+    ]);
+    // ビジョン表示は「打順」を基準に素材を引く。
+    // 背番号をキーにすると、背番号と別選手の打順番号が同じ場合に誤画像を拾うため、
+    // 必ず order:1 ～ order:9 / order:P の専用キーで保存する。
+    const key=`order:${String(item.order||"")}`;
+    if(!item.order) continue;
+    out[key]={
+      team,name:item.name,number:item.number||"",order:item.order||"",positionCode:item.position||"",
+      player:playerUrl?{url:playerUrl,filename:photoFile,storagePath:`vision/players/${teamFolder}/photos/${photoFile}`} : null,
+      nameImage:nameUrl?{url:nameUrl,filename:nameFile,storagePath:`vision/players/${teamFolder}/names/${nameFile}`} : null,
+      position:posUrl?{url:posUrl,filename:`${item.position}.png`,storagePath:`vision/positions/${item.position}.png`} : null
+    };
+  }
+  await VISION_REF.child(`assets/${side}`).set(out);
+}
+async function syncAllVisionPlayerAssets(){
+  const btn=document.getElementById('visionAssetSyncBtn');
+  if(btn){btn.classList.add('syncing');btn.textContent='同期中…';btn.disabled=true;}
+  try{
+    await Promise.all([syncVisionAssetsForSide('visitor'),syncVisionAssetsForSide('home')]);
+    const vp=visionStorageCatalog.visitor?.photos?.length||0, vn=visionStorageCatalog.visitor?.names?.length||0;
+    const hp=visionStorageCatalog.home?.photos?.length||0, hn=visionStorageCatalog.home?.names?.length||0;
+    if(btn) btn.textContent=`同期完了 写${vp+hp}/名${vn+hn}`;
+    setTimeout(()=>{if(btn)btn.textContent='選手素材を同期';},2500);
+  }catch(e){console.error(e);alert('選手素材の同期に失敗しました。Storageのフォルダ名・ファイル名を確認してください。');}
+  finally{if(btn){btn.classList.remove('syncing');btn.disabled=false;}}
+}
+
+async function loadTeamLogoCatalog(){
+  try{
+    const r=await FIREBASE_STORAGE.ref("vision/team-logos").listAll();
+    teamLogoCatalog=r.items.map(x=>x.name).sort((a,b)=>a.localeCompare(b,"ja"));
+  }catch(e){
+    console.warn("チームロゴ一覧取得失敗",e);
+    teamLogoCatalog=[];
+  }
+}
+function teamLogoOptionsHtml(current){
+  const cur=String(current||"");
+  let html=`<option value="">選択してください</option>`;
+  teamLogoCatalog.forEach(name=>{
+    const sel=name===cur?" selected":"";
+    html+=`<option value="${name.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}"${sel}>${name.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</option>`;
+  });
+  return html;
+}
+let masterStatsMode=false;
+
+function toggleMasterStatsMode(){
+  syncMasterInputs();
+  masterStatsMode=!masterStatsMode;
+  renderMasterRows();
+}
+
+function openMasterModal(side) {
+  ensurePlayerMasters();
+  masterStatsMode=false;
+
+  masterEditSide = side;
+
+  while (state.playerMasters[masterEditSide].length < 30) {
+    state.playerMasters[masterEditSide].push({
+      number: "",
+      name: "",
+      photoFile: "",
+      nameFile: "",
+      atBats: 0,
+      hits: 0,
+      homeRuns: 0
+    });
+  }
+
+  const modal = document.getElementById("masterModal");
+  const title = document.getElementById("masterTitle");
+
+  title.textContent =
+    side === "visitor"
+      ? "先攻 マスタ登録"
+      : "後攻 マスタ登録";
+
+  renderMasterRows();
+  loadVisionAssetCatalog(side).then(()=>{ if(masterEditSide===side) renderMasterRows(); });
+  loadTeamLogoCatalog().then(()=>{ if(masterEditSide===side) renderMasterRows(); });
+
+  modal.classList.add("show");
+}
+function renderMasterRows() {
+  const rows =
+    document.getElementById("masterRows");
+
+  rows.innerHTML = `
+<div class="masterTeamInfo">
+  <div>保存済み</div>
+  <select
+    id="saved_team_select"
+    class="masterTeamSelect"
+    onchange="loadMasterFromSelect()">
+    ${makeSavedTeamOptionsHtml()}
+  </select>
+
+  <div>チーム名</div>
+  <input
+    id="team_full_name"
+    class="masterInput"
+    onchange="loadMasterFromTeamNameInput()"
+    value="${state.teamInfo?.[masterEditSide]?.fullName || ""}">
+
+  <div>チーム名(一文字)</div>
+  <input
+    id="team_short_name"
+    class="masterInput"
+    value="${state.teamInfo?.[masterEditSide]?.shortName || ""}">
+
+  <div>チームロゴ</div>
+  <select id="team_logo_file" class="masterTeamSelect">
+    ${teamLogoOptionsHtml(state.teamInfo?.[masterEditSide]?.teamLogoFile || "")}
+  </select>
+
+  <button type="button" id="delete_team_master_btn" class="masterDeleteBtn" onclick="deleteSelectedTeamMaster()">チーム削除</button>
+</div>
+`;
+
+  ensurePlayerMasters();
+
+  const list =
+    state.playerMasters[masterEditSide];
+
+  const chunkSize = 10;
+
+  const playerColumns =
+    document.createElement("div");
+
+  playerColumns.className =
+    "masterPlayerColumns";
+
+  const assetNote=document.createElement("div");
+  assetNote.style.cssText="grid-column:1/-1;color:#9fdcff;font-size:13px;margin:4px 0 10px";
+  const assetCat=visionStorageCatalog[masterEditSide]||{photos:[],names:[],teamFolder:""};
+  assetNote.textContent=assetCat.teamFolder
+    ? `Storage: ${assetCat.teamFolder} ｜ 写真 ${assetCat.photos.length}件 ｜ 名前画像 ${assetCat.names.length}件`
+    : "Firebase Storage のチームフォルダを検索中…";
+  rows.appendChild(assetNote);
+
+  for (
+    let start = 0;
+    start < list.length;
+    start += chunkSize
+  ) {
+    const column =
+      document.createElement("div");
+
+    column.className = "masterColumn";
+
+    column.innerHTML = `
+      <div class="masterColumnTitle">
+        ${start + 1}〜${Math.min(start + 10, list.length)}
+      </div>
+    `;
+
+    const chunk =
+      list.slice(start, start + chunkSize);
+
+    if(masterStatsMode){
+      const statsHeader=document.createElement("div");
+      statsHeader.className="masterStatsHeader";
+      statsHeader.innerHTML=`
+        <div></div>
+        <div></div>
+        <div>打数</div>
+        <div>安打</div>
+        <div>本塁打</div>
+        <div></div>
+      `;
+      column.appendChild(statsHeader);
+    }
+
+    chunk.forEach((player, offset) => {
+      const index = start + offset;
+
+      const row =
+        document.createElement("div");
+
+      row.className = "masterRow";
+
+      row.classList.add("assetRow");
+      const cat=visionStorageCatalog[masterEditSide]||{photos:[],names:[]};
+      const photoSuggested=visionSuggestFile(player.name,cat.photos,"photo");
+      const nameSuggested=visionSuggestFile(player.name,cat.names,"name");
+      if(masterStatsMode){
+        row.classList.add("statsMode");
+        row.innerHTML = `
+          <input class="masterInput" id="master_number_${index}" placeholder="背番号" value="${player.number || ""}">
+          <input class="masterInput" id="master_name_${index}" placeholder="選手名" value="${player.name || ""}">
+          <input class="masterStatInput" type="number" min="0" id="master_atbats_${index}" title="打数" placeholder="打数" value="${Number(player.atBats||0)}">
+          <input class="masterStatInput" type="number" min="0" id="master_hits_${index}" title="安打" placeholder="安打" value="${Number(player.hits||0)}">
+          <input class="masterStatInput" type="number" min="0" id="master_hr_${index}" title="本塁打" placeholder="本塁打" value="${Number(player.homeRuns||0)}">
+          <button class="masterDeleteBtn" onclick="deleteMasterRow(${index})">×</button>
+        `;
+      }else{
+        row.innerHTML = `
+          <input class="masterInput" id="master_number_${index}" placeholder="背番号" value="${player.number || ""}">
+          <input class="masterInput" id="master_name_${index}" placeholder="選手名" value="${player.name || ""}">
+          <select class="masterAssetSelect" id="master_photo_${index}" title="選手写真">${visionAssetOptions(cat.photos,player.photoFile,photoSuggested)}</select>
+          <select class="masterAssetSelect" id="master_namefile_${index}" title="名前画像">${visionAssetOptions(cat.names,player.nameFile,nameSuggested)}</select>
+          <button class="masterDeleteBtn" onclick="deleteMasterRow(${index})">×</button>
+        `;
+      }
+
+      column.appendChild(row);
+    });
+
+    playerColumns.appendChild(column);
+  }
+
+  rows.appendChild(playerColumns);
+  const statsBtn=document.getElementById("masterStatsToggleBtn");
+  if(statsBtn){
+    statsBtn.classList.toggle("active",masterStatsMode);
+    statsBtn.textContent=masterStatsMode?"画像選択へ":"成績入力";
+  }
+}
+
+function addMasterRow() {
+  syncMasterInputs();
+
+  ensurePlayerMasters();
+
+  state.playerMasters[masterEditSide].push({
+    number: "",
+    name: "",
+    photoFile: "",
+    nameFile: "",
+    atBats: 0,
+    hits: 0,
+    homeRuns: 0
+  });
+
+  renderMasterRows();
+
+  const addBtn = document.querySelector(".masterAddBtn");
+  if (addBtn) addBtn.focus();
+}
+
+function deleteMasterRow(index) {
+
+  syncMasterInputs();
+
+  state.playerMasters[masterEditSide].splice(index, 1);
+
+  renderMasterRows();
+}
+
+function closeMasterModal() {
+  document.getElementById("masterModal").classList.remove("show");
+  masterEditSide = "";
+}
+
+async function saveMasterModal() {
+  ensurePlayerMasters();
+
+  if (!state.teamInfo) {
+    state.teamInfo = {
+      visitor: {},
+      home: {}
+    };
+  }
+
+  state.teamInfo[masterEditSide] = {
+    fullName:
+      document.getElementById("team_full_name")?.value.trim() || "",
+    shortName:
+      document.getElementById("team_short_name")?.value.trim() || "",
+    teamLogoFile:
+      document.getElementById("team_logo_file")?.value || ""
+  };
+
+  const list = state.playerMasters[masterEditSide];
+
+  state.playerMasters[masterEditSide] = list.map((_, index) => {
+    return {
+      number: document.getElementById(`master_number_${index}`)?.value.trim() || "",
+      name: document.getElementById(`master_name_${index}`)?.value.trim() || "",
+      photoFile: document.getElementById(`master_photo_${index}`)?.value ?? list[index]?.photoFile ?? "",
+      nameFile: document.getElementById(`master_namefile_${index}`)?.value ?? list[index]?.nameFile ?? "",
+      atBats: Math.max(0,Number(document.getElementById(`master_atbats_${index}`)?.value ?? list[index]?.atBats ?? 0)||0),
+      hits: Math.max(0,Number(document.getElementById(`master_hits_${index}`)?.value ?? list[index]?.hits ?? 0)||0),
+      homeRuns: Math.max(0,Number(document.getElementById(`master_hr_${index}`)?.value ?? list[index]?.homeRuns ?? 0)||0)
+    };
+  }).filter(player => player.name);
+
+  const savedSide=masterEditSide;
+  await saveTeamMaster(
+    state.teamInfo[savedSide],
+    state.playerMasters[savedSide]
+  );
+
+  closeMasterModal();
+  save();
+  await syncVisionAssetsForSide(savedSide);
+}
+
+
+
+function makePositionSelectHtml(index, currentPos) {
+  let html = `<select class="bulkSelect" id="bulk_pos_${index}">`;
+
+  POSITION_OPTIONS.forEach(pos => {
+    const selected = pos === currentPos ? "selected" : "";
+    html += `<option value="${pos}" ${selected}>${pos}</option>`;
+  });
+
+  html += `</select>`;
+  return html;
+}
+
+
+function syncMasterInputs() {
+  if (!masterEditSide) return;
+
+  const list = state.playerMasters[masterEditSide];
+
+  list.forEach((player, index) => {
+    const numberEl = document.getElementById(`master_number_${index}`);
+    const nameEl = document.getElementById(`master_name_${index}`);
+
+    if (numberEl) player.number = numberEl.value;
+    if (nameEl) player.name = nameEl.value;
+    const photoEl=document.getElementById(`master_photo_${index}`);
+    const nameFileEl=document.getElementById(`master_namefile_${index}`);
+    const abEl=document.getElementById(`master_atbats_${index}`);
+    const hitsEl=document.getElementById(`master_hits_${index}`);
+    const hrEl=document.getElementById(`master_hr_${index}`);
+    if(photoEl)player.photoFile=photoEl.value;
+    if(nameFileEl)player.nameFile=nameFileEl.value;
+    if(abEl)player.atBats=Math.max(0,Number(abEl.value)||0);
+    if(hitsEl)player.hits=Math.max(0,Number(hitsEl.value)||0);
+    if(hrEl)player.homeRuns=Math.max(0,Number(hrEl.value)||0);
+  });
+}
+
+
+
+let starterSequence=[];
+let starterStep=-1;
+
+// スタメン発表では、チームマスタではなく「現在画面に表示されているオーダー」を正とする。
+// これにより、マスタに旧氏名が残っていても発表内容へ混入しない。
+function getVisibleStarterOrders(){
+  // スタメン発表の氏名・守備位置・打順は「現在のstate.orders」だけを正とする。
+  // teamMasters / 過去のstarter.snapshot / DOM表示値から氏名を復元しない。
+  const result={visitor:[],home:[]};
+  for(const side of ["visitor","home"]){
+    result[side]=ORDER_LABELS.map((label,index)=>{
+      const base=state?.orders?.[side]?.[index]||{};
+      return {
+        ...JSON.parse(JSON.stringify(base)),
+        order:label,
+        position:String(base.position||"").trim(),
+        name:String(base.name||"").trim(),
+        number:String(base.number||"").trim()
+      };
+    });
+  }
+  return result;
+}
+
+async function openStarterModal(){
+  // 通信や素材準備より先にモーダルを開き、押下直後に操作へ応答する。
+  starterSequence=[];
+  starterStep=-1;
+  document.getElementById("starterModal")?.classList.add("show");
+  updateStarterProgress();
+  const startBtn=document.getElementById("starterStartBtn");
+  if(startBtn){startBtn.disabled=true;startBtn.textContent="素材読込中...";}
+  // 従来のデータ整理とスタメン準備はモーダル表示後に実行する。
+  await purgeStarterOldNameEverywhere();
+
+  // 過去のスタメン発表データ（旧氏名を含むsnapshot/playerName等）を完全に破棄する。
+  await VISION_REF.child("starter").remove();
+
+  const preloadToken=Date.now();
+  const logos=await ensureStarterTeamLogos();
+  const snapshot={
+    // 画面に見えているオーダーをそのまま固定する。チームマスタから氏名を引き直さない。
+    orders:JSON.parse(JSON.stringify(replaceStarterOldNameDeep(state?.orders||{visitor:[],home:[]}))),
+    teamInfo:JSON.parse(JSON.stringify(state?.teamInfo||{})),
+    teamLogo:JSON.parse(JSON.stringify(logos||{})),
+    assets:JSON.parse(JSON.stringify(visionState?.assets||{})),
+    sponsor:JSON.parse(JSON.stringify(visionState?.sponsor||visionState?.sponsors||{})),
+    createdAt:preloadToken
+  };
+  for(const side of ["visitor","home"]){
+    const info=snapshot.teamInfo?.[side]||{};
+    info.storageFolder=String(info.storageFolder||info.folder||info.fullName||info.name||"").trim();
+  }
+
+  await VISION_REF.update({
+    mode:"STARTER",
+    teamLogo:logos,
+    starter:{
+      active:true,phase:"idle",step:-1,side:"",index:-1,
+      preloadStatus:"loading",preloadToken:preloadToken,requestId:preloadToken,
+      snapshot:snapshot
+    }
+  });
+}
+function closeStarterModal(){
+  document.getElementById("starterModal")?.classList.remove("show");
+}
+function buildStarterSequence(firstSide){
+  const secondSide=firstSide==="visitor"?"home":"visitor";
+  const seq=[];
+  const snapOrders=visionState?.starter?.snapshot?.orders||state?.orders||{};
+  for(const side of [firstSide,secondSide]){
+    seq.push({phase:"logo",side,index:-1});
+    const orders=(snapOrders?.[side]||[]).slice(0,10);
+    orders.forEach((p,index)=>{
+      if(p && (String(p.name||"").trim() || String(p.number||"").trim())){
+        // 1選手につき「紹介素材」→「オーダー反映＋中央写真」の2段階
+        seq.push({phase:"media",side,index});
+        seq.push({phase:"player",side,index});
+      }
+    });
+  }
+  return seq;
+}
+async function ensureStarterTeamLogos(){
+  const result={};
+  for(const side of ["visitor","home"]){
+    const file=String(state.teamInfo?.[side]?.teamLogoFile||"").trim();
+    if(!file)continue;
+    try{
+      result[side]={url:await FIREBASE_STORAGE.ref(`vision/team-logos/${file}`).getDownloadURL(),filename:file};
+    }catch(e){console.warn("スタメン発表用ロゴ取得失敗",side,e)}
+  }
+  return result;
+}
+async function startStarterAnnouncement(){
+  if(String(visionState?.starter?.preloadStatus||"")!=="ready")return;
+  // スコア表示と同じ firstBatSide を唯一の基準にする。visitor/home は球場側を表すだけ。
+  const first=state?.firstBatSide==="home"?"home":"visitor";
+  starterSequence=buildStarterSequence(first);
+  if(!starterSequence.length){alert("発表できるオーダーがありません。");return}
+  starterStep=0;
+  const cur=starterSequence[starterStep];
+  updateStarterProgress();
+  await VISION_REF.update({
+    mode:"STARTER",
+    "starter/active":true,
+    "starter/firstSide":first,
+    "starter/phase":cur.phase,
+    "starter/step":starterStep,
+    "starter/side":cur.side,
+    "starter/index":cur.index,
+    "starter/requestId":Date.now()
+  });
+}
+async function starterNext(){
+  if(!starterSequence.length){await startStarterAnnouncement();return}
+  if(starterStep>=starterSequence.length-1)return;
+  starterStep++;
+  const cur=starterSequence[starterStep];
+  const first=visionState?.starter?.firstSide||(state?.firstBatSide==="home"?"home":"visitor");
+  const snap=visionState?.starter?.snapshot||{};
+  const p=((cur.phase==="player"||cur.phase==="media")?(visionState?.starter?.snapshot?.orders?.[cur.side]||state?.orders?.[cur.side]||[])[cur.index]:null)||{};
+  const info=snap?.teamInfo?.[cur.side]||state?.teamInfo?.[cur.side]||{};
+  const teamFolder=String(info.storageFolder||info.folder||info.fullName||info.name||"").trim();
+  updateStarterProgress();
+  await VISION_REF.update({
+    mode:"STARTER",
+    "starter/active":true,
+    "starter/firstSide":first,
+    "starter/phase":cur.phase,
+    "starter/step":starterStep,
+    "starter/side":cur.side,
+    "starter/index":cur.index,
+    "starter/playerName":(cur.phase==="player"||cur.phase==="media")?String(p.name||"").trim():"",
+    "starter/playerNumber":(cur.phase==="player"||cur.phase==="media")?String(p.number||"").trim():"",
+    "starter/snapshot/orders":JSON.parse(JSON.stringify(getVisibleStarterOrders())),
+    "starter/teamFolder":teamFolder,
+    "starter/requestId":Date.now()
+  });
+}
+async function starterBack(){
+  if(!starterSequence.length||starterStep<=0)return;
+  starterStep--;
+  const cur=starterSequence[starterStep];
+  const first=visionState?.starter?.firstSide||(state?.firstBatSide==="home"?"home":"visitor");
+  updateStarterProgress();
+  await VISION_REF.update({
+    mode:"STARTER",
+    "starter/active":true,
+    "starter/firstSide":first,
+    "starter/phase":cur.phase,
+    "starter/step":starterStep,
+    "starter/side":cur.side,
+    "starter/index":cur.index,
+    "starter/playerName":(cur.phase==="player"||cur.phase==="media")?String((visionState?.starter?.snapshot?.orders?.[cur.side]||state?.orders?.[cur.side]||[])[cur.index]?.name||"").trim():"",
+    "starter/playerNumber":(cur.phase==="player"||cur.phase==="media")?String((visionState?.starter?.snapshot?.orders?.[cur.side]||state?.orders?.[cur.side]||[])[cur.index]?.number||"").trim():"",
+    "starter/snapshot/orders":JSON.parse(JSON.stringify(getVisibleStarterOrders())),
+    "starter/teamFolder":String(visionState?.starter?.snapshot?.teamInfo?.[cur.side]?.storageFolder||visionState?.starter?.snapshot?.teamInfo?.[cur.side]?.folder||visionState?.starter?.snapshot?.teamInfo?.[cur.side]?.fullName||visionState?.starter?.snapshot?.teamInfo?.[cur.side]?.name||state?.teamInfo?.[cur.side]?.storageFolder||state?.teamInfo?.[cur.side]?.fullName||"").trim(),
+    "starter/requestId":Date.now()
+  });
+}
+async function resetStarterAnnouncement(){
+  starterStep=-1;
+  starterSequence=[];
+  updateStarterProgress();
+  await VISION_REF.update({mode:"STARTER","starter/active":true,"starter/phase":"idle","starter/step":-1,"starter/side":"","starter/index":-1,"starter/requestId":Date.now()});
+}
+function updateStarterPreloadUI(){
+  const btn=document.getElementById("starterStartBtn");
+  const el=document.getElementById("starterProgress");
+  if(!btn)return;
+  const status=String(visionState?.starter?.preloadStatus||"");
+  const ready=status==="ready";
+  btn.disabled=!ready;
+  btn.textContent=ready?"開始":"素材読込中...";
+  if(starterStep<0&&el){
+    el.textContent=ready?"読込完了：開始できます":"全スタメン素材を読込中...";
+  }
+}
+function updateStarterProgress(){
+  const el=document.getElementById("starterProgress");if(!el)return;
+  if(starterStep<0||!starterSequence.length){el.textContent="開始前：背景＋スポンサー表示";return}
+  const cur=starterSequence[starterStep];
+  const snap=visionState?.starter?.snapshot||{};
+  const team=snap.teamInfo?.[cur.side]?.fullName||snap.teamInfo?.[cur.side]?.name||state.teamInfo?.[cur.side]?.fullName||state.teamInfo?.[cur.side]?.name||(cur.side==="visitor"?"先攻":"後攻");
+  if(cur.phase==="logo"){
+    el.textContent=`${starterStep+1} / ${starterSequence.length}　${team}　チームロゴ`;
+    return;
+  }
+  const p=(visionState?.starter?.snapshot?.orders?.[cur.side]||state?.orders?.[cur.side]||[])[cur.index]||{};
+  if(cur.phase==="media"){
+    el.textContent=`${starterStep+1} / ${starterSequence.length}　${team}　${p.order||cur.index+1}番　${p.name||""}　紹介素材`;
+    return;
+  }
+  el.textContent=`${starterStep+1} / ${starterSequence.length}　${team}　${p.order||cur.index+1}番　${p.name||""}　オーダー＋中央写真`;
+}
+function updateVisionStatus(){
+  const el=document.getElementById("visionStatus"); if(!el)return;
+  const mode=visionState?.mode||"GAME"; const graphic=visionState?.graphic?.show?(visionState.graphic.mode||"ON"):"OFF";
+  el.textContent=`Firebase: scoreboard/vision ｜ mode=${mode} ｜ graphic=${graphic}`;
+  document.getElementById("visionGameBtn")?.classList.toggle("active",mode==="GAME");
+  document.getElementById("visionMatchBtn")?.classList.toggle("active",mode==="MATCH");
+  document.getElementById("visionStarterBtn")?.classList.toggle("active",mode==="STARTER");
+  document.getElementById("visionSheetIntroBtn")?.classList.toggle("active",mode==="SHEET_INTRO");
+  const pitchSpeedEnabled=visionState?.pitchSpeedEnabled!==false;
+  const pitchSpeedBtn=document.getElementById("visionPitchSpeedToggleBtn");
+  if(pitchSpeedBtn){
+    pitchSpeedBtn.classList.toggle("active",pitchSpeedEnabled);
+    pitchSpeedBtn.textContent=pitchSpeedEnabled?"球速表示 ON":"球速表示 OFF";
+  }
+}
+
+let sheetIntroBattingChoice="";
+function openSheetIntroModal(){
+  sheetIntroBattingChoice="";
+
+  const first=state?.firstBatSide==="home"?"home":"visitor";
+  const second=first==="visitor"?"home":"visitor";
+  const teamLabel=side=>{
+    const info=state?.teamInfo?.[side]||{};
+    return String(info.fullName||info.name||info.shortName||(side==="visitor"?"先攻":"後攻")).trim();
+  };
+
+  const firstBtn=document.getElementById("sheetIntroFirstBtn");
+  const secondBtn=document.getElementById("sheetIntroSecondBtn");
+  if(firstBtn){
+    firstBtn.textContent=teamLabel(first);
+    firstBtn.classList.remove("active");
+  }
+  if(secondBtn){
+    secondBtn.textContent=teamLabel(second);
+    secondBtn.classList.remove("active");
+  }
+  document.getElementById("sheetIntroModal")?.classList.add("show");
+}
+function closeSheetIntroModal(){document.getElementById("sheetIntroModal")?.classList.remove("show");}
+function selectSheetIntroBatting(which){
+  sheetIntroBattingChoice=which;
+  document.getElementById("sheetIntroFirstBtn")?.classList.toggle("active",which==="first");
+  document.getElementById("sheetIntroSecondBtn")?.classList.toggle("active",which==="second");
+}
+async function showSheetIntro(){
+  if(!sheetIntroBattingChoice){alert("先攻か後攻を選択してください。");return;}
+  const first=state?.firstBatSide==="home"?"home":"visitor";
+  const second=first==="visitor"?"home":"visitor";
+  const side=sheetIntroBattingChoice==="first"?first:second;
+  const bench=side==="home"?"1塁側":"3塁側";
+  const orders=JSON.parse(JSON.stringify(state?.orders?.[side]||[]));
+  const teamInfo=JSON.parse(JSON.stringify(state?.teamInfo?.[side]||{}));
+  const folder=String(teamInfo.storageFolder||teamInfo.folder||teamInfo.fullName||teamInfo.name||"").trim();
+  if(!folder){alert("選択チームのStorageフォルダ名が登録されていません。");return;}
+  await VISION_REF.update({
+    mode:"SHEET_INTRO",
+    sheetIntro:{active:true,side,batting:sheetIntroBattingChoice,bench,backgroundFile:`シート紹介背景${bench}.png`,teamFolder:folder,orders,assets:JSON.parse(JSON.stringify(visionState?.assets?.[side]||{})),requestId:Date.now()},
+    "starter/active":false
+  });
+  closeSheetIntroModal();
+}
+
+async function toggleVisionPitchSpeed(){
+  const enabled=visionState?.pitchSpeedEnabled!==false;
+  await quickVisionUpdate({pitchSpeedEnabled:!enabled});
+}
+async function setVisionGameMode(){await quickVisionUpdate({mode:"GAME","starter/active":false});}
+async function setVisionVersusMode(){
+  const visitorFile=String(state.teamInfo?.visitor?.teamLogoFile||"").trim();
+  const homeFile=String(state.teamInfo?.home?.teamLogoFile||"").trim();
+  if(!visitorFile||!homeFile){
+    alert("先攻・後攻の両チームで、マスタ登録の『チームロゴ』を選択してください。");
+    return;
+  }
+  try{
+    const [visitorUrl,homeUrl]=await Promise.all([
+      FIREBASE_STORAGE.ref(`vision/team-logos/${visitorFile}`).getDownloadURL(),
+      FIREBASE_STORAGE.ref(`vision/team-logos/${homeFile}`).getDownloadURL()
+    ]);
+    await VISION_REF.update({
+      mode:"MATCH",
+      teamLogo:{
+        visitor:{url:visitorUrl,filename:visitorFile},
+        home:{url:homeUrl,filename:homeFile}
+      }
+    });
+  }catch(e){
+    console.error("対戦表示用チームロゴ取得失敗",e);
+    alert("チームロゴを取得できませんでした。vision/team-logos のファイルを確認してください。");
+  }
+}
+async function setVisionGraphic(mode){
+  const current=visionState?.graphic?.url||"";
+  const url=prompt(mode==="TEMP"?"8秒表示するグラフィック画像URL":"常設表示するグラフィック画像URL",current);
+  if(!url)return;
+  await VISION_REF.child("graphic").set({show:true,mode,url:String(url).trim(),requestId:Date.now()});
+}
+async function clearVisionGraphic(){await VISION_REF.child("graphic").set({show:false,mode:"",url:"",requestId:Date.now()});}
+async function setVisionMatchBackground(){
+  const current=visionState?.matchBackground?.url||visionState?.matchBackground||"";
+  const url=prompt("試合背景画像のURL",current); if(!url)return;
+  await VISION_REF.child("matchBackground").set({url:String(url).trim(),requestId:Date.now()});
+}
+async function setVisionTeamLogos(){
+  const logos=visionState?.teamLogo||visionState?.teamLogos||{};
+  const visitor=prompt("先攻チームロゴ画像URL",logos?.visitor?.url||logos?.visitor||""); if(visitor===null)return;
+  const home=prompt("後攻チームロゴ画像URL",logos?.home?.url||logos?.home||""); if(home===null)return;
+  await VISION_REF.child("teamLogo").set({visitor:{url:String(visitor).trim()},home:{url:String(home).trim()}});
+}
+async function setVisionSponsors(){
+  let items=[];
+  try{
+    const result=await FIREBASE_STORAGE.ref("vision/sponsors").listAll();
+    items=result.items.slice().sort((a,b)=>a.name.localeCompare(b.name,"ja"));
+  }catch(e){
+    console.error("スポンサー素材一覧の取得に失敗しました",e);
+    alert("Firebase Storage の vision/sponsors フォルダを読み込めませんでした。");
+    return;
+  }
+
+  if(!items.length){
+    alert("vision/sponsors フォルダにスポンサー画像がありません。");
+    return;
+  }
+
+  const old=document.getElementById("sponsorSelectModal");
+  if(old)old.remove();
+
+  const modal=document.createElement("div");
+  modal.id="sponsorSelectModal";
+  modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:Arial,'Noto Sans JP',sans-serif";
+
+  const panel=document.createElement("div");
+  panel.style.cssText="width:560px;max-height:80vh;overflow:auto;background:#12171d;border:1px solid #39434d;border-radius:14px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);color:#fff";
+  panel.innerHTML=`
+    <div style="font-size:24px;font-weight:800;margin-bottom:6px">スポンサー設定</div>
+    <div style="font-size:13px;color:#9fb0bf;margin-bottom:16px">Firebase Storage：vision/sponsors</div>
+    <label style="display:block;font-size:14px;margin-bottom:6px">スポンサー画像</label>
+    <select id="sponsorFileSelect" style="width:100%;box-sizing:border-box;background:#202a33;color:#fff;border:1px solid #4b5966;border-radius:8px;padding:11px;font-size:16px">
+      <option value="">非表示</option>
+      ${items.map((x,i)=>`<option value="${i}">${String(x.name).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</option>`).join("")}
+    </select>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button id="sponsorCancelBtn" style="flex:1;padding:12px;border:0;border-radius:8px;background:#555;color:#fff;font-size:16px;cursor:pointer">キャンセル</button>
+      <button id="sponsorHideBtn" style="flex:1;padding:12px;border:0;border-radius:8px;background:#a33;color:#fff;font-size:16px;cursor:pointer">非表示</button>
+      <button id="sponsorSaveBtn" style="flex:1;padding:12px;border:0;border-radius:8px;background:#2e9b67;color:#fff;font-size:16px;font-weight:700;cursor:pointer">表示</button>
+    </div>`;
+  modal.appendChild(panel);
+  document.body.appendChild(modal);
+
+  document.getElementById("sponsorCancelBtn").onclick=()=>modal.remove();
+  document.getElementById("sponsorHideBtn").onclick=async()=>{
+    await VISION_REF.child("sponsor").set({top:null,bottom:null});
+    modal.remove();
+  };
+  document.getElementById("sponsorSaveBtn").onclick=async()=>{
+    const select=document.getElementById("sponsorFileSelect");
+    if(select.value===""){
+      await VISION_REF.child("sponsor").set({top:null,bottom:null});
+      modal.remove();
+      return;
+    }
+    const item=items[Number(select.value)];
+    if(!item)return;
+    try{
+      const url=await item.getDownloadURL();
+      // 1920x1080透過PNGを全面オーバーレイとして表示するため1枚だけ送る。
+      await VISION_REF.child("sponsor").set({
+        top:{url,filename:item.name,storagePath:item.fullPath,width:1920,height:1080,left:0,top:0},
+        bottom:null
+      });
+      modal.remove();
+    }catch(e){
+      console.error("スポンサー画像URLの取得に失敗しました",e);
+      alert("スポンサー画像を読み込めませんでした。");
+    }
+  };
+}
+
+function playDeadBall() {
+  pushHistory();
+  addPitchCount(1);
+
+  const side = getBattingSide();
+
+  const first = !!state.bases.first;
+  const second = !!state.bases.second;
+  const third = !!state.bases.third;
+
+  if (first && second && third) {
+    addRuns(1);
+  }
+
+  if (first && second) {
+    state.bases.third = true;
+  }
+
+  if (first) {
+    state.bases.second = true;
+  }
+
+  state.bases.first = true;
+
+  resetBSOnly();
+  advanceBatter(side);
+
+  save();
+}
+
+function playTagUp() {
+if (Number(state.outs || 0) >= 2) return;
+  if (!hasRunner()) return;
+
+  pushHistory();
+  addPitchCount(1);
+
+  if (state.bases.third) {
+    addRuns(1);
+    state.bases.third = false;
+  }
+
+  if (state.bases.second) {
+    state.bases.third = true;
+    state.bases.second = false;
+  }
+
+  if (state.bases.first) {
+    state.bases.second = true;
+    state.bases.first = false;
+  }
+
+  recordBatterStat(getBattingSide(),{atBat:1});
+  resetBSOnly();
+
+  // タッチアップは打者の打席結果（フライアウト）を伴うため、打順も次へ進める
+  advanceBatter(getBattingSide());
+  addOut();
+
+  if (state.outs < 3) {
+    save();
+  }
+}
+
+function hasRunner() {
+  return !!(
+    state.bases.first ||
+    state.bases.second ||
+    state.bases.third
+  );
+}
+
+function fitTeamCellText(cell) {
+  const textLength = String(cell.textContent || "").length;
+
+  let fontSize = 26;
+
+  if (textLength >= 10) {
+    fontSize = 14;
+  } else if (textLength >= 8) {
+    fontSize = 16;
+  } else if (textLength >= 6) {
+    fontSize = 19;
+  } else if (textLength >= 4) {
+    fontSize = 22;
+  }
+
+  cell.style.fontSize = fontSize + "px";
+}
+
+// チームマスタの正本はFirebase。
+// 起動時に古いlocalStorageを読み込むと、修正前の選手名が一時的に復活するため先読みしない。
+// Firebase受信後のみローカルキャッシュへ反映する。
+let teamMastersCache = {};
+
+function loadTeamMasters() {
+  return teamMastersCache || {};
+}
+
+function teamMasterFirebaseKey(fullName) {
+  const bytes = new TextEncoder().encode(String(fullName || ""));
+  let binary = "";
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+async function saveTeamMaster(teamInfo, players) {
+  const fullName = String(teamInfo?.fullName || "").trim();
+  if (!fullName) return;
+
+  const master = {
+    teamInfo: {
+      fullName,
+      shortName: String(teamInfo?.shortName || "").trim(),
+      teamLogoFile: String(teamInfo?.teamLogoFile || "").trim()
+    },
+    players: JSON.parse(JSON.stringify(players || [])),
+    updatedAt: firebase.database.ServerValue.TIMESTAMP
+  };
+
+  // 画面表示用キャッシュにも即時反映
+  teamMastersCache[fullName] = {
+    teamInfo: master.teamInfo,
+    players: JSON.parse(JSON.stringify(master.players))
+  };
+  localStorage.setItem(TEAM_MASTER_KEY, JSON.stringify(teamMastersCache));
+
+  // 正本は Firebase Realtime Database に保存
+  await TEAM_MASTERS_REF.child(teamMasterFirebaseKey(fullName)).set(master);
+}
+
+function applyTeamMasterByName(side, teamName) {
+  const name = String(teamName || "").trim();
+  if (!name) return false;
+
+  const master = loadTeamMasters()[name];
+  if (!master) return false;
+
+  state.teamInfo[side] = {
+    fullName: master.teamInfo?.fullName || name,
+    shortName: master.teamInfo?.shortName || "",
+    teamLogoFile: master.teamInfo?.teamLogoFile || ""
+  };
+  state.playerMasters[side] = JSON.parse(JSON.stringify(master.players || []));
+  return true;
+}
+
+function loadMasterFromTeamNameInput() {
+  if (!masterEditSide) return;
+  const teamName = document.getElementById("team_full_name")?.value || "";
+  if (applyTeamMasterByName(masterEditSide, teamName)) renderMasterRows();
+}
+
+function makeSavedTeamOptionsHtml() {
+  const names = Object.keys(loadTeamMasters()).sort((a, b) => a.localeCompare(b, "ja"));
+  let html = `<option value="">選択してください</option>`;
+  html += `<option value="__NEW_TEAM__">＋ 新規登録</option>`;
+  names.forEach(name => { html += `<option value="${name}">${name}</option>`; });
+  return html;
+}
+
+function startNewTeamMaster() {
+  if (!masterEditSide) return;
+
+  masterLoadedTeamName = "";
+
+  if (!state.teamInfo) state.teamInfo = { visitor:{}, home:{} };
+  state.teamInfo[masterEditSide] = { fullName:"", shortName:"", teamLogoFile:"" };
+
+  // 新規登録時は選手情報を完全に空にする（表示用に30枠を用意）
+  state.playerMasters[masterEditSide] = Array.from({length:30}, () => ({
+    number:"",
+    name:"",
+    photoFile:"",
+    nameFile:""
+  }));
+
+  // 以前のチームのStorage候補を残さない
+  visionStorageCatalog[masterEditSide] = { photos:[], names:[], teamFolder:"" };
+
+  renderMasterRows();
+  const select = document.getElementById("saved_team_select");
+  if (select) select.value = "__NEW_TEAM__";
+  document.getElementById("team_full_name")?.focus();
+}
+
+function loadMasterFromSelect() {
+  if (!masterEditSide) return;
+  const teamName = document.getElementById("saved_team_select")?.value || "";
+  if (!teamName) return;
+
+  if (teamName === "__NEW_TEAM__") {
+    startNewTeamMaster();
+    return;
+  }
+
+  if (applyTeamMasterByName(masterEditSide, teamName)) {
+    masterLoadedTeamName = teamName;
+    renderMasterRows();
+  }
+}
+
+async function deleteSelectedTeamMaster() {
+  const select = document.getElementById("saved_team_select");
+  const selectedName = String(select?.value || "").trim();
+  const assetTeamName = String((visionStorageCatalog[masterEditSide] || {}).teamFolder || "").trim();
+  const inputName = String(document.getElementById("team_full_name")?.value || "").trim();
+
+  // 優先順位：保存済みで明示選択 → 現在読み込み中のマスタ → Storage上の現在チーム → 入力中のチーム名
+  let teamName = selectedName || masterLoadedTeamName;
+  if (!teamName && assetTeamName && teamMastersCache[assetTeamName]) teamName = assetTeamName;
+  if (!teamName && inputName && teamMastersCache[inputName]) teamName = inputName;
+
+  if (!teamName || !teamMastersCache[teamName]) {
+    alert("現在表示しているチームに対応する保存済みマスタが見つかりません。");
+    return;
+  }
+
+  if (!confirm(`「${teamName}」をチームマスタから削除しますか？
+この操作は元に戻せません。`)) return;
+
+  try {
+    await TEAM_MASTERS_REF.child(teamMasterFirebaseKey(teamName)).remove();
+    delete teamMastersCache[teamName];
+    localStorage.setItem(TEAM_MASTER_KEY, JSON.stringify(teamMastersCache));
+    if (masterLoadedTeamName === teamName) masterLoadedTeamName = "";
+
+    // 現在の先攻・後攻の試合設定は消さず、保存済みマスタだけ削除する
+    renderMasterRows();
+    alert(`「${teamName}」をチームマスタから削除しました。`);
+  } catch (e) {
+    console.error("チームマスタ削除に失敗しました", e);
+    alert("チームマスタの削除に失敗しました。");
+  }
+}
+
+// Firebaseのチームマスタを全PCで共有
+TEAM_MASTERS_REF.on("value", snapshot => {
+  const raw = snapshot.val() || {};
+  const fromFirebase = {};
+  Object.values(raw).forEach(master => {
+    const fullName = String(master?.teamInfo?.fullName || "").trim();
+    if (!fullName) return;
+    fromFirebase[fullName] = {
+      teamInfo: {
+        fullName,
+        shortName: String(master?.teamInfo?.shortName || "").trim(),
+        teamLogoFile: String(master?.teamInfo?.teamLogoFile || "").trim()
+      },
+      players: Array.isArray(master?.players) ? master.players : []
+    };
+  });
+  teamMastersCache = fromFirebase;
+  localStorage.setItem(TEAM_MASTER_KEY, JSON.stringify(teamMastersCache));
+  if (masterEditSide && document.getElementById("masterModal")?.classList.contains("show")) {
+    renderMasterRows();
+  }
+});
+
+// 旧版にあった localStorage → Firebase の自動移行は廃止。
+// 既存の古いチームマスタがFirebaseへ再投入されるのを防ぐ。
+// 今後のチームマスタ更新は saveTeamMaster() による明示保存のみ。
+</script>
+
+
+<!-- ===== 画面自動フィット：既存機能・配置は変更しない ===== -->
+<script>
+(function () {
+  const FIT_MARGIN = 36;
+  const MAX_SCALE = 1;
+  const MIN_SCALE = 0.55;
+
+  function fitControlPanel() {
+    const wrap = document.getElementById('panelWrap');
+    if (!wrap) return;
+
+    // いったん100%に戻して、本来の必要サイズを測る
+    wrap.style.zoom = '1';
+
+    const naturalWidth = wrap.scrollWidth;
+    const naturalHeight = wrap.scrollHeight;
+    const availableWidth = Math.max(320, window.innerWidth - FIT_MARGIN * 2);
+    const availableHeight = Math.max(320, window.innerHeight - FIT_MARGIN * 2);
+
+    if (!naturalWidth || !naturalHeight) return;
+
+    const widthScale = availableWidth / naturalWidth;
+    const heightScale = availableHeight / naturalHeight;
+    const scale = Math.max(
+      MIN_SCALE,
+      Math.min(MAX_SCALE, widthScale, heightScale)
+    );
+
+    wrap.style.zoom = String(scale);
+  }
+
+  let fitTimer = null;
+  function scheduleFit() {
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(fitControlPanel, 30);
+  }
+
+  window.addEventListener('load', fitControlPanel);
+  window.addEventListener('resize', scheduleFit);
+
+  // 初期描画後にも再計算
+  requestAnimationFrame(() => requestAnimationFrame(fitControlPanel));
+})();
+</script>
+
+
+<!-- iPad対応：既存の配置・機能は変更せず、画面幅に合わせて操作盤全体を縮小 -->
+<style id="ipad-control-fit-style">
+@media (max-width: 1200px) and (pointer: coarse) {
+  html { overflow-x: hidden; }
+  body { justify-content: flex-start !important; align-items: flex-start !important; }
+  button, select { touch-action: manipulation; }
+}
+</style>
+<script id="ipad-control-fit-script">
+(function(){
+  const mq = window.matchMedia('(max-width: 1200px) and (pointer: coarse)');
+  let timer;
+  function fit(){
+    document.body.style.zoom = '';
+    if(!mq.matches) return;
+    const wrap = document.getElementById('panelWrap');
+    if(!wrap) return;
+    // 現行の横並び配置を維持し、画面幅に収まる倍率だけ適用する。
+    const contentWidth = Math.max(wrap.scrollWidth + 48, wrap.getBoundingClientRect().width + 48);
+    const available = document.documentElement.clientWidth;
+    const scale = Math.min(1, available / contentWidth);
+    document.body.style.zoom = String(scale);
+  }
+  function scheduleFit(){ clearTimeout(timer); timer=setTimeout(fit, 80); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fit,{once:true});
+  else fit();
+  window.addEventListener('resize',scheduleFit);
+  window.addEventListener('orientationchange',scheduleFit);
+})();
+</script>
+</body>
+</html>
+<style>
+/* マスタ登録モーダルだけ元のレイアウトをそのまま50%縮小 */
+.masterPanel {
+  transform: scale(0.5) !important;
+  transform-origin: center center !important;
+}
+</style>
+<style>
+/* 50%縮小時も各選手行の「写真」「名前画像」2つのプルダウンを省略しない */
+.masterPanel{
+  width: 2760px !important;
+  max-width: none !important;
+}
+.masterPlayerColumns{
+  width: 100% !important;
+  overflow: visible !important;
+}
+.masterColumn{
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+}
+.masterRow.assetRow{
+  grid-template-columns: 78px minmax(220px,1fr) 170px 170px 42px !important;
+  gap: 6px !important;
+}
+.masterAssetSelect{
+  width: 170px !important;
+  min-width: 170px !important;
+}
+</style>
+<style>
+/* 横幅・50%縮小はそのまま。選手一覧だけ縦方向を広げて10人分を見やすくする */
+.masterPanel{
+  max-height: none !important;
+}
+#masterRows{
+  max-height: 100vh !important;
+}
+</style>
